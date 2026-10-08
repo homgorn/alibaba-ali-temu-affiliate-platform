@@ -199,7 +199,10 @@
       "Send a request with a malformed query parameter and confirm a clear 400 with a descriptive message"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f014-f017.ts",
+    "verified_at": "2026-10-08",
+    "evidence": "Typed lookup API answers free-text + category with correct results, 400 on malformed params, empty array on no-match. Postgres FTS replaces SQLite LIKE at parity time (gap recorded)."
   },
   {
     "id": "F015",
@@ -241,7 +244,10 @@
       "Confirm the exclusion list is configurable and documented, not hardcoded in the query"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f014-f017.ts + ingest.test.ts",
+    "verified_at": "2026-10-08",
+    "evidence": "Safety-critical rows are rejected at ingest with logged matched category/keyword and never enter the product table; lookup API never returns them. Exclusion list is env-configurable and documented."
   },
   {
     "id": "F018",

@@ -171,6 +171,47 @@ function parseRow(row: CsvRow, opts: IngestOptions): ParsedRow {
   }
 }
 
+/**
+ * Resolve a category path (e.g. ["Womens Clothing & Accessories","Dresses"])
+ * into category rows, creating any that are missing, and return the leaf
+ * category_id (or null when the path is empty). Idempotent: re-ingesting the
+ * same path reuses the same rows.
+ */
+export function ensureCategory(
+  runner: Runner,
+  networkId: string,
+  parts: readonly string[],
+  nowIso: string,
+): string | null {
+  if (parts.length === 0) return null
+  let leafId: string | null = null
+  let parentExternal: string | null = null
+  for (let i = 0; i < parts.length; i++) {
+    const name = parts[i]!.trim()
+    if (!name) continue
+    const externalId = parts.slice(0, i + 1).join('/').toLowerCase()
+    const existing = runner.query<{ category_id: string }>(
+      `SELECT category_id FROM category
+       WHERE network_id=$1 AND external_id=$2 AND level=$3`,
+      [networkId, externalId, i + 1],
+    )[0]
+    if (existing) {
+      leafId = existing.category_id
+      parentExternal = externalId
+      continue
+    }
+    const id = newId()
+    runner.exec(
+      `INSERT INTO category (category_id, network_id, external_id, parent_external_id, level, name_en, is_safety_critical)
+       VALUES ($1,$2,$3,$4,$5,$6,0)`,
+      [id, networkId, externalId, parentExternal, i + 1, name],
+    )
+    leafId = id
+    parentExternal = externalId
+  }
+  return leafId
+}
+
 export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions): IngestResult {
   const started = Date.now()
   const now = opts.now ?? new Date()
@@ -283,6 +324,13 @@ export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions):
       // ---- Idempotent product upsert (FR-9).
       const monetisable = parsed.commissionRate !== null && parsed.commissionRate > 0
 
+      // Register the category tree from the feed's `category_path` (e.g.
+      // "Womens Clothing & Accessories>Dresses") so category rows exist and the
+      // product can be linked to its leaf category. A missing category is not an
+      // error — the product is still stored, just uncategorised.
+      const categoryPath = parsed.categoryPath.join('>')
+      const categoryId = ensureCategory(runner, parsed.networkId, parsed.categoryPath, nowIso)
+
       // EC-2: original < sale is an upstream anomaly. Flag it; do NOT fix it.
       const anomaly =
         parsed.salePrice.minor === 0
@@ -308,8 +356,8 @@ export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions):
            product_id, network_id, external_product_id, title, detail_url,
            image_url, video_url, commission_rate, monetisable, safety_excluded,
            first_seen_at, last_seen_at, source, source_run_id, evaluate_rate,
-           price_is_placeholder
-         ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,0,$10,$10,$11,$12,$13,$14)
+           price_is_placeholder, category_id, category_path
+         ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,0,$10,$10,$11,$12,$13,$14,$15,$16)
          ON CONFLICT (network_id, external_product_id) DO UPDATE SET
            title = excluded.title,
            detail_url = excluded.detail_url,
@@ -319,7 +367,9 @@ export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions):
            monetisable = excluded.monetisable,
            last_seen_at = excluded.last_seen_at,
            evaluate_rate = excluded.evaluate_rate,
-           price_is_placeholder = excluded.price_is_placeholder`,
+           price_is_placeholder = excluded.price_is_placeholder,
+           category_id = excluded.category_id,
+           category_path = excluded.category_path`,
         [
           newId(),
           parsed.networkId,
@@ -335,6 +385,8 @@ export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions):
           runId,
           parsed.evaluateRate,
           parsed.salePrice.minor === 0 ? 1 : 0,
+          categoryId ?? null,
+          categoryPath || null,
         ],
       )
 

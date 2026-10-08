@@ -185,3 +185,23 @@ is recorded as a known gap on the feature rather than claimed as done.
 | Re-ingesting an unchanged feed on 3 later dates adds NO duplicate price point | PASS | 33006951783 has 1 observation(s) after 3 ingests at T1/T2/T3 with an unchanged price |
 | Test suite  pnpm test passes | PASS |  Test Files  5 passed (5) \|       Tests  113 passed (113) |
 | Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+---
+
+## F013 — price history across multiple ingests
+
+**Verified:** 2026-10-08T11:44:12.112Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (10/10 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F013 step 1-2  a product queried after multiple ingests returns >1 historical price point | PASS | 2 points for 33006951783: 2026-10-01=18.50 -> 2026-10-05=14.99 |
+| F013  the price DROP is recorded as a distinct earlier value | PASS | first=18.50, second=14.99 |
+| F013 step 2  each observation records its source | PASS | sources: csv |
+| F013 step 3 / FR-18  the daily rollup survives deletion of raw observations | PASS | rollup rows 1 -> 1 after deleting all raw observations |
+| F013 step 3  retention/downsample rule is configured with a rollup target | PASS | {"table_name":"price_observation","max_age_days":365,"rollup_to":"price_daily_rollup"} |
+| A price-only change is reported as rowsWritten 1, not 0 | PASS | rows written   1 |
+| A no-op re-ingest is reported as rowsWritten 0 | PASS | rows written   0 |
+| Re-ingesting an unchanged feed on 3 later dates adds NO duplicate price point | PASS | 33006951783 has 1 observation(s) after 3 ingests at T1/T2/T3 with an unchanged price |
+| Test suite  pnpm test passes | PASS |  Test Files  5 passed (5) \|       Tests  113 passed (113) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
