@@ -33,15 +33,15 @@ front-load a summary so they can be retrieved without full reads.
 
 | Page | Summary | Confidence |
 |---|---|---|
-| [ALIBABA-B2B.md](10-platforms/ALIBABA-B2B.md) | **B2B affiliate DOES exist** (ads.alibaba.com, up to 15%) — but it explicitly refuses Russian traffic and blocks all MMP attribution. High-ticket, late-paying. | **9/10** |
-| ⏳ [TEMU.md](10-platforms/TEMU.md) | Temu creator/affiliate programs, API reality, grey mechanisms and their ToS status. | **0/10 — R3 produced nothing** |
+| [ALIBABA-B2B.md](10-platforms/ALIBABA-B2B.md) | **B2B affiliate DOES exist** (ads.alibaba.com, up to 15%) — but it refuses Russian traffic and blocks all MMP attribution. High-ticket, late-paying. Deferred per D-009. | **9/10** |
+| [TEMU.md](10-platforms/TEMU.md) | **No public API exists** — both partner URLs are JS shells. Build nothing; use as curated content source. Grey scraping rejected on principle. | **7/10** |
 
 ## 20 · Affiliate programs
 
 | Page | Summary | Confidence |
 |---|---|---|
 | [ALIEXPRESS-AFFILIATE.md](20-affiliate-programs/ALIEXPRESS-AFFILIATE.md) | API is real but gated: Portals account + Open Platform app of type "Affiliate API" + business licence. **No sandbox.** 3-day cookie. ~5k req/day. 8 open gaps (G1–G8). | **7/10** |
-| ⏳ [NETWORKS-LANDSCAPE.md](20-affiliate-programs/NETWORKS-LANDSCAPE.md) | All other joinable networks (goods + services), with feed/API availability as the ranking key. | **2/10 — R5 produced nothing** |
+| [NETWORKS-LANDSCAPE.md](20-affiliate-programs/NETWORKS-LANDSCAPE.md) | **Rank by feed availability, not commission.** Amazon's PA-API 5 is DEPRECATED (returns `AccessDenied`) — use Creators API. Tiering + capability-flag contract. | **6/10** |
 
 ## 30 · API reference
 
@@ -66,11 +66,11 @@ front-load a summary so they can be retrieved without full reads.
 
 | Page | Summary | Confidence |
 |---|---|---|
-| [LLM-DISCOVERABILITY.md](50-strategy-traffic/LLM-DISCOVERABILITY.md) | **LLM crawlers must be assumed not to run JS.** HTML-first, `.md` twins, llms.txt v2, `Link:` headers, AI-bot robots policy. Basis for D-010. | **9/10** |
-| ⏳ [CHANNEL-REALITY.md](50-strategy-traffic/CHANNEL-REALITY.md) | Which channels work in 2026 for physical-goods affiliate; time-to-first-commission per channel. | **3/10 — R6 produced nothing** |
-| ⏳ [UNIT-ECONOMICS.md](50-strategy-traffic/UNIT-ECONOMICS.md) | CPC/EPC reality with explicit arithmetic: clicks needed per revenue target. | **3/10 — BLOCKING traffic spend (D-020)** |
-| ⏳ [TRAFFIC-IDEAS.md](50-strategy-traffic/TRAFFIC-IDEAS.md) | Synthesised traffic ideas, ranked by value-to-effort. | **3/10** |
-| ⏳ [ATTRIBUTION-AND-FRAUD.md](50-strategy-traffic/ATTRIBUTION-AND-FRAUD.md) | What destroys EPC in 2026, and the legitimate countermeasures. | **3/10** |
+| [LLM-DISCOVERABILITY.md](50-strategy-traffic/LLM-DISCOVERABILITY.md) | **LLM crawlers must be assumed not to run JS.** HTML-first, `.md` twins, llms.txt v2, `Link:` headers, AI-bot robots policy. Basis for D-010. **The one traffic thesis resting on verified evidence.** | **9/10** |
+| [UNIT-ECONOMICS.md](50-strategy-traffic/UNIT-ECONOMICS.md) | **BLOCKED — framework only, no figures invented.** The `TAC = CPC/CR < EPC` test decides paid vs organic. 3-day cookie is the binding constraint. | **3/10 (framework 9/10)** |
+| ⏳ [CHANNEL-REALITY.md](50-strategy-traffic/CHANNEL-REALITY.md) | Which channels work in 2026; time-to-first-commission per channel. | ⏳ blocked by G25 |
+| ⏳ [TRAFFIC-IDEAS.md](50-strategy-traffic/TRAFFIC-IDEAS.md) | 12–18 synthesised traffic ideas. **Deferred, not abandoned** — writing them without EPC data would be generic advice. | ⏳ deferred |
+| ⏳ [ATTRIBUTION-AND-FRAUD.md](50-strategy-traffic/ATTRIBUTION-AND-FRAUD.md) | What destroys EPC in 2026, and legitimate countermeasures. | ⏳ deferred |
 
 ## 60 · Product synthesis
 
@@ -106,14 +106,8 @@ front-load a summary so they can be retrieved without full reads.
 
 | Page | Summary | Confidence |
 |---|---|---|
-| ⏳ [R1-ALIEXPRESS-API.md](90-research-log/R1-ALIEXPRESS-API.md) | Track R1 findings + gaps. | ⏳ |
-| ⏳ [R2-ALIBABA-B2B.md](90-research-log/R2-ALIBABA-B2B.md) | Track R2 findings + gaps. | ⏳ |
-| ⏳ [R3-TEMU.md](90-research-log/R3-TEMU.md) | Track R3 findings + gaps. | ⏳ |
-| ⏳ [R4-FEEDS-DATA-ENG.md](90-research-log/R4-FEEDS-DATA-ENG.md) | Track R4 findings + gaps. | ⏳ |
-| ⏳ [R5-NETWORKS.md](90-research-log/R5-NETWORKS.md) | Track R5 findings + gaps. | ⏳ |
-| ⏳ [R6-TRAFFIC.md](90-research-log/R6-TRAFFIC.md) | Track R6 findings + gaps. | ⏳ |
-| ⏳ [R7-PRODUCT-SYNTHESIS.md](90-research-log/R7-PRODUCT-SYNTHESIS.md) | Track R7 findings + gaps. | ⏳ |
-| ⏳ [R8-LEGAL.md](90-research-log/R8-LEGAL.md) | Track R8 findings + gaps. | ⏳ |
+| [RESEARCH-ROUNDS.md](90-research-log/RESEARCH-ROUNDS.md) | Round 1 (all 8 agents died) and round 2 (quota exhausted, partial recovery), with root causes. | — |
+| ⏳ R1–R8 individual pages | Folded into the topic pages above to avoid duplicating a source of truth. | — |
 
 ---
 
@@ -121,7 +115,25 @@ front-load a summary so they can be retrieved without full reads.
 
 | Artefact | Purpose |
 |---|---|
-| [`feature_list.json`](../feature_list.json) | The work ledger. Every verifiable feature, `passes: false` until a verifier proves it. |
-| [`ROADMAP.md`](../roadmap/ROADMAP.md) | Phased plan, ordered by what unblocks the most. |
+| [`feature_list.json`](../feature_list.json) | The work ledger. 27 features, every one `passes: false` until a verifier proves it. |
+| [`ROADMAP.md`](../roadmap/ROADMAP.md) | Phased plan, ordered by what unblocks the most. 8-level test ladder. |
+| [`../AGENTS.md`](../AGENTS.md) | Operating rules R1–R4. Read this before touching anything. |
 | [`../research/reports/`](../research/reports/) | Full per-track research reports. |
 | [`../research/raw/`](../research/raw/) | Verbatim source captures — provenance for every cited claim. |
+| [`scripts/agents-doctor.mjs`](../scripts/agents-doctor.mjs) | Agent harness pre-flight. Run before any fan-out. |
+| [`scripts/dispatch.mjs`](../scripts/dispatch.mjs) | Resilient dispatcher. `--check <track>` inspects what survived a failed run. |
+
+---
+
+## ⚠️ Active blockers
+
+| ID | Blocker | Who |
+|---|---|---|
+| **G25** | No EPC/CPC data obtainable — **blocks all traffic spend** (D-020) | needs `websearch` recovery |
+| **G17** | Commission rates unverified for **every** network | needs `websearch` recovery |
+| **G1–G4** | AliExpress endpoint list, signing algorithm, rate limits, **ИП eligibility** | operator + API access |
+| **G20–G21, G24** | Amazon Creators API details, CJ/Awin docs, Temu terms — all **JS-rendered**, need a headless browser | tooling gap |
+| **G16** | RU/CIS competitors — positioning unvalidated | needs `websearch` |
+| **M1** | Analytics/tracking unspecified — measurement impossible without it | operator decision |
+| **B1** | `gh` not authenticated — cannot push | operator |
+| **G27** | Account daily quota exhausted — agent dispatch blocked | resets with quota |
