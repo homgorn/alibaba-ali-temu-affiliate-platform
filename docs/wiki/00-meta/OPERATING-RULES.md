@@ -65,7 +65,52 @@ Nine mandatory sections; a section that does not apply is written
 ## R4 — No secrets in git
 
 API keys, app secrets, tokens, `.env` — never in code, never in commits.
-`.gitignore` is configured and `agents-doctor.mjs` scans for leaks on every run.
+
+### The two-file convention
+
+| File | Contains | Tracked? |
+|---|---|---|
+| `.env.example` | Every variable **name** + docs + access path + `[BLOCKING]`/`[PHASE-N]`/`[OPTIONAL]` tag. **Zero values.** | ✅ yes |
+| `.env` | The actual values. | ❌ **no** |
+
+### Verify before every commit
+
+```bash
+git check-ignore -v .env          # MUST report an ignore rule
+git check-ignore -v .env.example  # MUST NOT report one (it's meant to be tracked)
+git status --porcelain            # .env must never appear
+node scripts/agents-doctor.mjs    # scans for key-shaped strings
+```
+
+### If a secret is ever committed
+
+**Rotate it at the provider FIRST.** Then rewrite history. Removing the file from
+the working tree afterwards does **not** undo exposure — anything pushed may have
+been cloned, indexed or cached.
+
+### Credentials are never required to develop
+
+The engine starts, ingests CSV fixtures and serves lookups with **zero**
+credentials set (SPEC-001 FR-7 / NFR-8). Credentials unlock *live data* and
+*deployment* — nothing more. This is why every variable in `.env.example` is
+optional for development, and why the work was never blocked waiting for keys.
+
+### Two defaults that carry a warning
+
+| Variable | Why the default is cautious |
+|---|---|
+| `ALIEXPRESS_DAILY_REQUEST_BUDGET=50` | **No sandbox exists** — every request hits production. The "5,000/day" figure is unverified (gap G3), so we start 100× lower. |
+| `SAFETY_EXCLUDED_CATEGORIES` | **Must never be empty.** SPEC-001 EC-11 makes an empty list a hard startup failure, because a blank list silently disables the safety control (D-012). |
+
+Retention defaults are labelled conservative and are **not** sourced from the
+actual ToS — that extraction is open gap M6. Tighten when known.
+
+### A `.gitignore` subtlety worth remembering
+
+Git **does not descend into an ignored directory**, so a `data/` rule makes
+`!data/.gitkeep` unreachable — the negation cannot work. Use `data/*` to keep the
+directory visible while ignoring its contents. Found and fixed in this repo
+(session 002); it would have silently blocked the placeholder forever.
 
 ---
 
