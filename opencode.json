@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "explorer": {
+      "model": "openrouter/google/gemini-3.8-flash",
+      "description": "Read-only codebase mapping. Answers 'where is X'. Never writes."
+    },
+    "researcher": {
+      "model": "openrouter/openai/gpt-6.1-sol",
+      "description": "Runs a research track: 12-22 searches, verbatim captures to research/raw/<track>/, synthesised report to research/reports/. Writes only inside its assigned paths."
+    },
+    "researcher-fast": {
+      "model": "openrouter/google/gemini-3.8-flash",
+      "description": "Fallback researcher when the primary researcher model is rate-limited. Same contract, fewer sources (min 8 searches)."
+    },
+    "architect": {
+      "model": "openrouter/anthropic/claude-sonnet-5.5",
+      "description": "Drafts specs, ADRs, schema. Writes only to docs/ and db/."
+    },
+    "implementer": {
+      "model": "openrouter/openai/gpt-6.1-sol",
+      "description": "Builds the current feature per an approved spec. Writes to src/, tools/, db/."
+    },
+    "implementer-fast": {
+      "model": "openrouter/deepseek/deepseek-v4-pro-0813",
+      "description": "Fallback implementer when the primary is rate-limited."
+    },
+    "verifier": {
+      "model": "openrouter/anthropic/claude-sonnet-5.5",
+      "description": "Proves a feature works end to end against the real path. Read-only. Only agent permitted to set passes:true."
+    },
+    "analyst": {
+      "model": "openrouter/qwen/qwen3.8-max-prime",
+      "description": "Metrics, funnels, EPC, P&L, analytics. Writes to docs/logs/ and docs/analytics/."
+    },
+    "lawyer": {
+      "model": "openrouter/anthropic/claude-opus-5.5",
+      "description": "Legal/tax/compliance analysis with mandatory citation discipline. Read-only. Marks every claim HARD FACT / INFERENCE / UNVERIFIED."
+    }
+  }
+}
