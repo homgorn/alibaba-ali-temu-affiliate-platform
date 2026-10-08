@@ -145,7 +145,11 @@
       "Run the migrations a second time and confirm they are idempotent — no error, no data loss"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f011.ts",
+    "verified_at": "2026-10-08",
+    "evidence": "11/11 checks passed. Migrations apply in 79 ms (NFR-4 target <10 s). Re-run applies 0 and loses 0 rows. 24 tables, all 23 required by SPEC-003 section 6 present. All 11 money columns INTEGER, 0 float (FR-3). Drift detection refuses an edit to an applied migration. 0 FK violations. 42/42 tests, typecheck clean.",
+    "known_gaps": "SPEC-003 AC-2 (same migrations on Postgres) is INCONCLUSIVE - no Postgres server on this machine (no Docker, no psql). Recorded in ADR-003. This is NOT a passing test."
   },
   {
     "id": "F012",
