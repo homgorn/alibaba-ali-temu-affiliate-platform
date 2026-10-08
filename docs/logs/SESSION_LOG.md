@@ -184,6 +184,95 @@ B1 `gh auth login` required · B2 git identity required · B3 affiliate API
 credentials required · B4 legal entity / tax residency required · B5 Docker +
 Postgres absent.
 
+---
+
+## 2026-10-08 — Session 003 — Specs, ADRs, environment template
+
+**Actor:** orchestrating agent
+**Trigger:** operator supplied credentials/identity (`homgorn` /
+`homgorn@gmail.com`) and instructed "делай дальше что осталось".
+
+### Git identity corrected
+
+`git config user.name` → `homgorn`, `user.email` → `homgorn@gmail.com`.
+
+⚠️ **Existing history retains the previous author** (`susa ai
+<hiall@users.noreply.github.com>`) on commits made before the correction.
+**Deliberately NOT rewritten.** Rewriting history is destructive and falls under
+R1 — it needs explicit operator confirmation, which has not been given. Flagged
+here for the record.
+
+### Environment template delivered
+
+`.env.example` (tracked, 11 documented blocks, zero values) + `.env`
+(gitignored, blank). Every variable tagged `[BLOCKING]` / `[PHASE-N]` /
+`[OPTIONAL]` with its access path.
+
+Three defaults carry deliberate reasoning:
+
+| Variable | Why cautious |
+|---|---|
+| `ALIEXPRESS_DAILY_REQUEST_BUDGET=50` | **No sandbox exists** — every request hits production. The "5,000/day" figure is unverified (G3), so start 100× lower. |
+| `SAFETY_EXCLUDED_CATEGORIES` pre-filled | SPEC-001 EC-11 makes an empty list a hard startup failure — a blank list silently disables the safety control (D-012). |
+| Retention defaults | Labelled conservative and **not** ToS-sourced (M6). |
+
+Key property preserved: **the engine starts with zero credentials** (SPEC-001
+FR-7/NFR-8), so work was never blocked waiting on keys.
+
+### Specs completed (SDD, all nine mandatory sections each)
+
+| Spec | Contents |
+|---|---|
+| **SPEC-001** ingestion engine | 22 FR · 9 NFR · 20 AC · 14 EC · TS contracts · data models |
+| **SPEC-003** schema | Destination-keyed pricing · money as integer minor units · unknown≠0 · sizing arithmetic · 20 AC · 15 EC |
+| **SPEC-004** static-first web | HTML-first · `.md` twins · `llms.txt` · AI-bot policy · **the compliance test that makes D-010 permanent** · 22 AC · 14 EC |
+
+**SPEC-003 sizing arithmetic (the number that decided ADR-003):**
+50k products → catalogue 0.13 GB + price history 2.7 GB ≈ **2.9 GB**.
+500k products → ≈ **28 GB**. This **rules out SQLite-only**, so the split is
+justified by arithmetic rather than preference. Assumptions A1–A5 stated and
+flagged as unverified — A2 (4 observations/product/day) is the load-bearing one.
+
+### ADRs written
+
+ADR-001 Next.js static export over Astro · ADR-002 Cloudflare Pages+Workers
+(**3 unverified risks recorded**, incl. payment from a Russian entity) ·
+ADR-003 SQLite dev / Postgres prod · ADR-004 static `.md` artifacts.
+
+### Design decisions worth remembering
+
+1. **Money is `INTEGER` minor units, never float.** This product *is* a price
+   computation; `0.1 + 0.2 ≠ 0.3` in IEEE 754.
+2. **Unknown is `NULL`, never `0`.** `is_complete` marks an incomplete total so
+   the UI cannot present it as final. The mission's honesty requirement is
+   enforced in the **data layer**, not left to the renderer.
+3. **Cross-listing matches are candidates, never merges.** Merging product rows
+   destroys per-network attribution, which is required for commission
+   reconciliation.
+4. **Pricing is keyed `(product, destination_country, observed_at)`** because
+   `ship_to_country` returns per-country tax-policy pricing. A single `price`
+   column cannot represent the platform's actual semantics.
+5. **The `.md` twin is generated from the same render call as the HTML**, so
+   factual equality is structural, not a convention.
+
+### Bug found and fixed in this session
+
+`.gitignore` used `data/` with `!data/.gitkeep`. Git does **not** descend into an
+ignored directory, so the negation was unreachable and the placeholder could
+never be tracked. Changed to `data/*`. Verified: `.gitkeep` trackable,
+`data/dev.db` still ignored.
+
+### Push hiccup
+
+First push attempt failed with `Failed to connect to github.com:443` — a
+transient network failure, not an auth problem. Retry succeeded.
+
+### Next
+
+SPEC-002 (product identity/dedup) and SPEC-005 (links/attribution) remain.
+Implementation may begin against SPEC-001 once the operator approves.
+
+
 ### Next
 
 Await round-1 reports → synthesis → wiki population → roadmap → Phase-1 specs.
