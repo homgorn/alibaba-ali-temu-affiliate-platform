@@ -131,13 +131,25 @@ front-load a summary so they can be retrieved without full reads.
 
 | Artefact | Purpose |
 |---|---|
-| [`feature_list.json`](../feature_list.json) | The work ledger. 27 features, every one `passes: false` until a verifier proves it. |
+| [`feature_list.json`](../feature_list.json) | The work ledger. 27 features; **F011, F012 verified**, the rest `passes: false`. |
 | [`ROADMAP.md`](../roadmap/ROADMAP.md) | Phased plan, ordered by what unblocks the most. 8-level test ladder. |
 | [`../AGENTS.md`](../AGENTS.md) | Operating rules R1–R4. Read this before touching anything. |
 | [`../research/reports/`](../research/reports/) | Full per-track research reports. |
 | [`../research/raw/`](../research/raw/) | Verbatim source captures — provenance for every cited claim. |
+| [`../docs/logs/BUILD_LOG.md`](../docs/logs/BUILD_LOG.md) | Verification evidence per feature. |
 | [`scripts/agents-doctor.mjs`](../scripts/agents-doctor.mjs) | Agent harness pre-flight. Run before any fan-out. |
 | [`scripts/dispatch.mjs`](../scripts/dispatch.mjs) | Resilient dispatcher. `--check <track>` inspects what survived a failed run. |
+
+---
+
+## ⚙️ Implementation notes worth knowing
+
+| Note | Why it matters |
+|---|---|
+| **Node's built-in `node:sqlite`, not better-sqlite3** | Removes the only native dependency: no prebuilt binary, no node-gyp, no pnpm build-script approval. Loaded via `createRequire`, because a static import gets rewritten by Vite into a bare `sqlite` specifier that cannot resolve a built-in. |
+| **Type stripping, no build step** | Code runs via `node --experimental-strip-types`. Consequence: **TypeScript parameter properties are unsupported** (`constructor(readonly x)` throws). Plain class fields only. |
+| **Placeholders are `$1,$2` (Postgres style)** | One migration/SQL set for both engines (FR-1). The SQLite adapter rewrites to `?NNN` — numbered, not bare `?`, because `?` binds positionally and a repeated placeholder would shift every later binding. |
+| **`observedAt` comes from the file's mtime for CSV** | Re-ingesting an unchanged file must be idempotent. Reading the clock instead would append a new price observation on every replay and grow the price series without bound. Caught by the F012 verifier. |
 
 ---
 
