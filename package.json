@@ -1,0 +1,40 @@
+{
+  "name": "@affiliate/platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@12.5.1",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:l1": "vitest run tests/unit",
+    "test:l2": "vitest run tests/contract",
+    "test:l3": "vitest run tests/integration",
+    "test:l4": "vitest run tests/golden",
+    "test:l7": "vitest run tests/seo-geo",
+    "db:migrate": "node --experimental-strip-types --no-warnings src/engine/cli/migrate.ts",
+    "db:status": "node --experimental-strip-types --no-warnings src/engine/cli/migrate.ts --status",
+    "ingest": "node --experimental-strip-types src/engine/cli/ingest.ts",
+    "doctor": "node scripts/agents-doctor.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {},
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
