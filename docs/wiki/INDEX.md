@@ -88,8 +88,24 @@ front-load a summary so they can be retrieved without full reads.
 |---|---|---|
 | ⏳ [SYSTEM-OVERVIEW.md](70-architecture/SYSTEM-OVERVIEW.md) | Engine + modules topology, plugin contract, data flow. | — |
 | ⏳ [MODULE-CONTRACT.md](70-architecture/MODULE-CONTRACT.md) | The interface every network integration must implement. | — |
-| ⏳ [STACK-DECISION.md](70-architecture/STACK-DECISION.md) | Language, ORM, queue, search, deployment — with the reasoning and the alternatives. | — |
-| [ADR/](adr/) | Architecture Decision Records, one per decision. | — |
+| ⏳ [STACK-DECISION.md](70-architecture/STACK-DECISION.md) | Language, ORM, queue, search, deployment. | — |
+
+### Specs (approved)
+
+| Spec | Scope |
+|---|---|
+| [SPEC-001](../specs/SPEC-001-ingestion-engine.md) | Module contract, idempotent upserts, rate budgeting, dead-letter, retention classes. **22 FR · 20 AC · 14 EC** |
+| [SPEC-003](../specs/SPEC-003-schema.md) | Postgres-compatible schema, SQLite dev. **Destination-keyed pricing, money as integer minor units, retention as config.** Sizing arithmetic shown. |
+| [SPEC-004](../specs/SPEC-004-static-first-web.md) | Static HTML, `.md` twins, `llms.txt`, AI-bot robots policy, and **the compliance test that makes D-010 permanent.** |
+
+### ADRs
+
+| ADR | Decision |
+|---|---|
+| [ADR-001](../adr/ADR-001-static-first-framework.md) | Next.js static export over Astro — one language with the engine; export *guarantees* HTML-first structurally |
+| [ADR-002](../adr/ADR-002-hosting.md) | Cloudflare Pages + Workers. ⚠️ **3 unverified risks**, incl. payment from a Russian entity |
+| [ADR-003](../adr/ADR-003-database.md) | SQLite dev + Postgres prod. Sizing math **rules out SQLite-only** at 28 GB |
+| [ADR-004](../adr/ADR-004-markdown-serving.md) | Static `.md` artifacts, `page.html.md` convention, CDN header + template fallback |
 
 ## 80 · Legal & compliance
 
