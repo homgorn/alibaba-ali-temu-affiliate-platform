@@ -139,20 +139,51 @@ All specs approved, all ADRs written, `feature_list.json` fully populated with `
 
 ---
 
-## Phase 3 — ENGINE (first vertical slice)
+## Phase 3 — ENGINE (first vertical slice) · **COMPLETE**
 
-**Milestone definition:** *AliExpress feed ingestion → DB → simple lookup API.* CSV source first, so the build is never blocked by an approval queue we don't control.
+**Milestone definition:** *AliExpress feed ingestion → DB → price history.* CSV
+source only, so the build was never blocked by an approval queue we don't
+control.
 
-| Step | Feature |
-|---|---|
-| 1 | Config + secrets loading (`.env`, never committed — R4) |
-| 2 | SQLite schema + migrations; Postgres-compatible |
-| 3 | Module plugin contract + reference CSV module |
-| 4 | Idempotent upsert pipeline with request budgeting |
-| 5 | Price-history snapshot writer with retention policy |
-| 6 | Postgres FTS index + lookup API (Workers) |
-| 7 | AliExpress API module (blocked on B3/keys) |
-| 8 | **Verifier proves the real path end to end** |
+| Step | Feature | State |
+|---|---|---|
+| 1 | Config + secrets loading (`.env`, never committed — R4) | ✅ `.env.example`, 11 documented blocks |
+| 2 | SQLite schema + migrations; Postgres-compatible | ✅ **F011 VERIFIED 11/11** |
+| 3 | Module plugin contract + reference CSV module | ✅ CSV ingest behind one interface |
+| 4 | Idempotent upsert pipeline with request budgeting | ✅ **F012 VERIFIED 15/15** |
+| 5 | Price-history writer with retention policy | ✅ **F013 VERIFIED 10/10** |
+| 6 | Postgres FTS index + lookup API (Workers) | ⬜ F014 |
+| 7 | AliExpress API module | ⬜ F015 — blocked on credentials (issue #1) |
+| 8 | Verifier proves the real path end to end | ✅ `scripts/verify-f0*.ts`, separate DB connection |
+
+**Standing in the engine:** 24 tables, 113 tests, typecheck clean.
+
+### Bugs found by verification, not by reading code
+
+Recorded because the pattern matters more than the individual fixes:
+
+| # | Bug | Why it survived review |
+|---|---|---|
+| 1 | `?` placeholders bind positionally, so a repeated `$10` shifted every later binding | Looked correct; only failed with 15+ params |
+| 2 | Safety match missed `Batteries` for keyword `battery` (different stems) | A safety control that *appears* to work |
+| 3 | `[...text]` spread a **string** into characters — title matching never fired | Category matching still worked, so tests looked green |
+| 4 | Price observations doubled on replay | `observed_at` in the natural key |
+| 5 | Idempotency fingerprint compared a value against itself | Always matched → every run claimed no-op |
+| 6 | `rollup_to` stored the literal string `"rollup_to"` | Field existed, so a presence-check passed |
+
+**Lesson recorded for the team:** three of these were *half-working safety or
+accounting controls*. They pass a presence check and fail a value check. The
+verification scripts assert **values**, not presence.
+
+### Remaining in Phase 3
+
+- **F014** — lookup API with Postgres FTS (needs the Postgres runner for parity)
+- **F015** — the live AliExpress module (blocked on credentials)
+- **Retention job** — FR-16/FR-17 batched, resumable deletion. Configuration and
+  schema exist; the job does not.
+- **Module plugin contract** — SPEC-001 FR-1..FR-5 is specified and the CSV
+  source implements it implicitly, but no explicit `ModuleContract` type or a
+  second module proving plug-in independence (F017) exists yet.
 
 ### Multi-level testing (operator asked)
 
