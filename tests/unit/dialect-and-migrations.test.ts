@@ -96,28 +96,44 @@ describe('applyConditionals() (SPEC-003 FR-2 — engine guards)', () => {
 })
 
 describe('toSqlitePlaceholders()', () => {
-  it('converts $1..$n to ?', () => {
-    expect(toSqlitePlaceholders('VALUES ($1, $2)')).toBe('VALUES (?, ?)')
+  it('converts $N to the numbered ?NNN form', () => {
+    // Numbered, not bare `?`: SQLite's `?` binds positionally, so a placeholder
+    // repeated twice would consume two params and shift every later binding.
+    // Postgres allows `$10` to repeat; `?10` is the exact equivalent.
+    expect(toSqlitePlaceholders('VALUES ($1, $2)')).toBe('VALUES (?1, ?2)')
+  })
+
+  it('handles multi-digit placeholders without truncating them', () => {
+    expect(toSqlitePlaceholders('VALUES ($10, $11)')).toBe('VALUES (?10, ?11)')
+  })
+
+  it('a REPEATED placeholder binds the same value, not two', () => {
+    // The bug this guards: `first_seen_at = $10, last_seen_at = $10` must not
+    // shift bindings for $11..$14.
+    const sql = 'INSERT INTO t VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10,$11)'
+    const out = toSqlitePlaceholders(sql)
+    expect(out).toBe('INSERT INTO t VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?10,?11)')
+    expect((out.match(/\?10/g) ?? []).length).toBe(2)
+    expect(out).toContain('?11')
   })
 
   it('leaves string literals untouched — a naive regex would corrupt these', () => {
-    // Regression guard: a literal containing $1 must not be rewritten.
     expect(toSqlitePlaceholders(`SELECT 'cost $1 only' FROM t WHERE x = $2`)).toBe(
-      `SELECT 'cost $1 only' FROM t WHERE x = ?`,
+      `SELECT 'cost $1 only' FROM t WHERE x = ?2`,
     )
   })
 
   it('handles escaped quotes inside literals', () => {
-    expect(toSqlitePlaceholders(`SELECT 'it''s $1' , $2`)).toBe(`SELECT 'it''s $1' , ?`)
+    expect(toSqlitePlaceholders(`SELECT 'it''s $1' , $2`)).toBe(`SELECT 'it''s $1' , ?2`)
   })
 
   it('does not treat $0 or $ followed by a letter as a placeholder', () => {
     expect(toSqlitePlaceholders('SELECT $name, $0')).toBe('SELECT $name, $0')
   })
 
-  it('handles multiple placeholders correctly', () => {
+  it('handles multiple distinct placeholders correctly', () => {
     expect(toSqlitePlaceholders('INSERT INTO t VALUES ($1,$2,$3)')).toBe(
-      'INSERT INTO t VALUES (?,?,?)',
+      'INSERT INTO t VALUES (?1,?2,?3)',
     )
   })
 })

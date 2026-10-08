@@ -62,3 +62,87 @@ Postgres database. No Postgres server exists on this machine (no Docker, no psql
 ADR-003 already records this as an open gap. It is NOT a passing test.
 
 **`passes` for F011:** eligible to set true
+
+---
+
+## F012 — CSV feed ingested end to end
+
+**Verified:** 2026-10-08T09:53:59.030Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** NOT VERIFIED (14/15 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F012 step 2  the documented command completes without error | PASS | ✓ ingested C:\susa ai\alibaba ali temu\tests\fixtures\products.csv |
+| F012 step 2  the command prints a rows-ingested count | PASS | rows read      66 |
+| F012 step 3  rows read equals the fixture row count | PASS | fixture data rows=66, command reported=66 |
+| F012 step 3  every row is either stored or safety-excluded — none lost | PASS | products=56 + safety_excluded=10 = 66 vs fixture 66 |
+| F012 step 3  a product table and a price-history table hold data | PASS | product=56, price_observation=56 |
+| F012 step 4  second run applies nothing — idempotent, no data loss | FAIL | products 56->56, observations 56->112, exclusions 10->10 |
+| F012 step 4  the second run still records its own ingestion_run (audit, not dedup) | PASS | ingestion_run 1 -> 2 |
+| F012 step 4  the command reports 0 written and N unchanged | PASS | rows read      66 \| rows written   0 \| rows unchanged 56 |
+| F012 step 5  modifying one field changes exactly that row and nothing else | PASS | total=56 (was 56), target title="Wireless Bluetooth Earbuds PRO Noise Cancelling", report: rows written   1 |
+| SPEC-003 FR-9  unknown shipping stored as NULL, never as 0 | PASS | incomplete=21, complete=147, unknown-but-stored-as-0=0 |
+| SPEC-001 FR-20  no safety-excluded product is in the catalogue | PASS | 0 excluded titles found in product |
+| SPEC-003 FR-3  money is still integer-only after ingest | PASS | 0 non-integer money columns |
+| SPEC-003 FR-19  every product is traceable to a run | PASS | 0 products without source_run_id |
+| Test suite  pnpm test passes | PASS |  Test Files  4 passed (4) \|       Tests  102 passed (102) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+**Method note:** assertions run through a SEPARATE database connection and the
+documented CLI, not the ingest code path under test.
+
+---
+
+## F012 — CSV feed ingested end to end
+
+**Verified:** 2026-10-08T09:56:27.775Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** NOT VERIFIED (13/15 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F012 step 2  the documented command completes without error | PASS | ✓ ingested C:\susa ai\alibaba ali temu\tests\fixtures\products.csv |
+| F012 step 2  the command prints a rows-ingested count | PASS | rows read      66 |
+| F012 step 3  rows read equals the fixture row count | PASS | fixture data rows=66, command reported=66 |
+| F012 step 3  every row is either stored or safety-excluded — none lost | PASS | products=56 + safety_excluded=10 = 66 vs fixture 66 |
+| F012 step 3  a product table and a price-history table hold data | PASS | product=56, price_observation=56 |
+| F012 step 4  second run applies nothing — idempotent, no data loss | PASS | products 56->56, observations 56->56, exclusions 10->10 |
+| F012 step 4  the second run still records its own ingestion_run (audit, not dedup) | PASS | ingestion_run 1 -> 2 |
+| F012 step 4  the command reports 0 written and N unchanged | PASS | rows read      66 \| rows written   0 \| rows unchanged 0 |
+| F012 step 5  modifying one field changes exactly that row and nothing else | FAIL | total=56 (was 56), target title="Wireless Bluetooth Earbuds PRO Noise Cancelling", report: rows written   0 |
+| SPEC-003 FR-9  unknown shipping stored as NULL, never as 0 | PASS | incomplete=7, complete=49, unknown-but-stored-as-0=0 |
+| SPEC-001 FR-20  no safety-excluded product is in the catalogue | PASS | 0 excluded titles found in product |
+| SPEC-003 FR-3  money is still integer-only after ingest | PASS | 0 non-integer money columns |
+| SPEC-003 FR-19  every product is traceable to a run | PASS | 0 products without source_run_id |
+| Test suite  pnpm test passes | FAIL |  Test Files  1 failed \| 3 passed (4) \|       Tests  2 failed \| 100 passed (102) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+**Method note:** assertions run through a SEPARATE database connection and the
+documented CLI, not the ingest code path under test.
+
+---
+
+## F012 — CSV feed ingested end to end
+
+**Verified:** 2026-10-08T09:58:04.192Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (15/15 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F012 step 2  the documented command completes without error | PASS | ✓ ingested C:\susa ai\alibaba ali temu\tests\fixtures\products.csv |
+| F012 step 2  the command prints a rows-ingested count | PASS | rows read      66 |
+| F012 step 3  rows read equals the fixture row count | PASS | fixture data rows=66, command reported=66 |
+| F012 step 3  every row is either stored or safety-excluded — none lost | PASS | products=56 + safety_excluded=10 = 66 vs fixture 66 |
+| F012 step 3  a product table and a price-history table hold data | PASS | product=56, price_observation=56 |
+| F012 step 4  second run applies nothing — idempotent, no data loss | PASS | products 56->56, observations 56->56, exclusions 10->10 |
+| F012 step 4  the second run still records its own ingestion_run (audit, not dedup) | PASS | ingestion_run 1 -> 2 |
+| F012 step 4  the command reports 0 written and N unchanged | PASS | rows read      66 \| rows written   0 \| rows unchanged 56 |
+| F012 step 5  modifying one field changes exactly that row and nothing else | PASS | total=56 (was 56), title="Wireless Bluetooth Earbuds PRO Noise Cancelling", rows written   1, observations 56->56 (title-only change must not add a price point) |
+| SPEC-003 FR-9  unknown shipping stored as NULL, never as 0 | PASS | incomplete=7, complete=49, unknown-but-stored-as-0=0 |
+| SPEC-001 FR-20  no safety-excluded product is in the catalogue | PASS | 0 excluded titles found in product |
+| SPEC-003 FR-3  money is still integer-only after ingest | PASS | 0 non-integer money columns |
+| SPEC-003 FR-19  every product is traceable to a run | PASS | 0 products without source_run_id |
+| Test suite  pnpm test passes | PASS |  Test Files  4 passed (4) \|       Tests  102 passed (102) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+**Method note:** assertions run through a SEPARATE database connection and the
+documented CLI, not the ingest code path under test.

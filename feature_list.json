@@ -164,7 +164,11 @@
       "Modify one field in the fixture, re-run, and confirm only that row changed"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f012.ts",
+    "verified_at": "2026-10-08",
+    "evidence": "15/15 checks passed. 66 fixture rows read; 56 stored + 10 safety-excluded = 66 (none lost). Re-run: products 56->56, observations 56->56, exclusions 10->10, reports 0 written / 56 unchanged. Changing one field updates exactly 1 product row and adds NO price point. Unknown shipping stored as NULL with is_complete=0, never 0. All money columns still INTEGER after ingest. Every product traceable to a run. 102/102 tests, typecheck clean.",
+    "known_gaps": "Uses a CSV fixture, not the live AliExpress API (blocked on credentials, issue #1). Temu is not ingested: no public API exists."
   },
   {
     "id": "F013",

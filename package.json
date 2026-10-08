@@ -20,8 +20,9 @@
     "test:l7": "vitest run tests/seo-geo",
     "db:migrate": "node --experimental-strip-types --no-warnings src/engine/cli/migrate.ts",
     "db:status": "node --experimental-strip-types --no-warnings src/engine/cli/migrate.ts --status",
-    "ingest": "node --experimental-strip-types src/engine/cli/ingest.ts",
-    "doctor": "node scripts/agents-doctor.mjs"
+    "ingest": "node --experimental-strip-types --no-warnings src/engine/cli/ingest.ts",
+    "doctor": "node scripts/agents-doctor.mjs",
+    "db:seed": "node --experimental-strip-types --no-warnings src/engine/cli/seed.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

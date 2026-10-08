@@ -55,8 +55,15 @@ export function sqliteModule(): SqliteModule {
 }
 
 /**
- * Rewrite $1,$2... to ?,? while leaving string literals and identifiers alone.
- * A naive regex would corrupt any text containing '$1' inside a quoted string.
+ * Rewrite $1,$2... to SQLite's numbered ?NNN form.
+ *
+ * Why numbered and not plain `?`: SQLite's `?` binds strictly positionally, so
+ * a placeholder repeated twice (as `first_seen_at = last_seen_at = $10`) would
+ * consume two parameters and shift every later binding. Postgres allows `$10`
+ * to repeat freely. `?10` is the exact equivalent and binds by index, so the
+ * same SQL text works on both engines with no restructuring (SPEC-003 FR-1).
+ *
+ * String literals are skipped so a literal containing "$1" is never rewritten.
  */
 export function toSqlitePlaceholders(sql: string): string {
   let out = ''
@@ -84,8 +91,9 @@ export function toSqlitePlaceholders(sql: string): string {
     }
 
     if (ch === '$' && /[1-9]/.test(sql[i + 1] ?? '')) {
-      out += '?'
-      i += 2
+      const digits = /^\d+/.exec(sql.slice(i + 1))![0]
+      out += `?${digits}`
+      i += 1 + digits.length
       continue
     }
 
