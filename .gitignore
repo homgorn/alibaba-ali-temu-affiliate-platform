@@ -53,7 +53,9 @@ Cargo.lock
 *.db-shm
 *.sqlite
 *.sqlite3
-data/
+# NOTE: `data/*` not `data/` — git does not descend into an ignored DIRECTORY,
+# so a `data/` rule would make `!data/.gitkeep` unreachable.
+data/*
 !data/.gitkeep
 *.sql.gz
 dump/
