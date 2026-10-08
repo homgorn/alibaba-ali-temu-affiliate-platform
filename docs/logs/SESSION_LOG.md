@@ -49,6 +49,54 @@ important claim across ≥3 independent sources, and label every statement
 HARD FACT / INFERENCE / RUMOUR / UNVERIFIED. Full description in
 `RESEARCH_LOG.md`.
 
+### ⚠️ Round 1 outcome: PARTIAL — all 8 agents failed to return
+
+**All eight subagents terminated with provider errors. No synthesised report was
+produced by any agent.** Causes, as reported:
+
+| Track | Failure |
+|---|---|
+| R1, R5 | `Service temporarily overloaded` (upstream provider) |
+| R3, R6 | `Rate limit exceeded: free-models-per-min` |
+| R2, R4, R7, R8 | `Rate limit exceeded: free-models-per-day-high-balance` |
+| (second dispatch attempt) | `ECONNRESET — socket connection closed unexpectedly` |
+
+**What survived on disk: 31 verbatim source captures**, because each agent
+writes sources incrementally before synthesising:
+
+| Track | Captures | Usable? |
+|---|---|---|
+| R1 | 1 | partial — endpoint names and access flow only |
+| R2 | 11 | **yes** — produced the decisive B2B finding |
+| R3 | 0 | **no** |
+| R4 | 6 | yes |
+| R5 | 0 | **no** |
+| R6 | 0 | **no** |
+| R7 | 8 | yes |
+| R8 | 5 | partial — tax regime captured, payouts not |
+
+**Recovery performed:** the orchestrator independently verified the two most
+load-bearing claims by direct fetch against primary sources —
+`platform.openai.com/docs/bots` and `llmstxt.org` — rather than relying on the
+failed agents. Four substantive wiki pages were written from the surviving
+captures plus these direct verifications.
+
+**Honest assessment of the research gap:** the *technical* direction is now
+well-evidenced (GEO/LLM 9/10, B2B terms 9/10, API shape 7/10). The *commercial*
+direction is not: unit economics, network landscape, and Temu are effectively
+unresearched. This is recorded as risk **R-013** and as decision **D-020**, which
+forbids traffic spend until R3/R5/R6 are re-run.
+
+### Operator questionnaire (20 questions) — answered
+
+Answers drove decisions D-008 through D-020. Notable resolutions: ИП confirmed;
+audience Global/English-first; TypeScript + Node 22; Next.js **static-first**;
+Cloudflare; SQLite dev → Postgres prod; Postgres FTS; monorepo modular monolith;
+**safety-critical categories excluded**; retention first-class; organic-first
+then paid; success = first real commission. A conflict between ИП + the
+Alibaba.com Russia exclusion and a Global audience is documented in ROADMAP as a
+blocking item.
+
 ### Blockers raised to operator
 
 B1 `gh auth login` required · B2 git identity required · B3 affiliate API

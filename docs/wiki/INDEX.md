@@ -33,15 +33,15 @@ front-load a summary so they can be retrieved without full reads.
 
 | Page | Summary | Confidence |
 |---|---|---|
-| ⏳ [ALIBABA-B2B.md](10-platforms/ALIBABA-B2B.md) | Alibaba.com Open Platform, whether B2B affiliate exists for outsiders, buying leads, 1688, 淘宝联盟. | ⏳ R2 |
-| ⏳ [TEMU.md](10-platforms/TEMU.md) | Temu creator/affiliate programs, API reality, grey mechanisms and their ToS status. | ⏳ R3 |
+| [ALIBABA-B2B.md](10-platforms/ALIBABA-B2B.md) | **B2B affiliate DOES exist** (ads.alibaba.com, up to 15%) — but it explicitly refuses Russian traffic and blocks all MMP attribution. High-ticket, late-paying. | **9/10** |
+| ⏳ [TEMU.md](10-platforms/TEMU.md) | Temu creator/affiliate programs, API reality, grey mechanisms and their ToS status. | **0/10 — R3 produced nothing** |
 
 ## 20 · Affiliate programs
 
 | Page | Summary | Confidence |
 |---|---|---|
-| ⏳ [ALIEXPRESS-AFFILIATE.md](20-affiliate-programs/ALIEXPRESS-AFFILIATE.md) | The core integration: eligibility, endpoints, limits, commission terms, test env. | ⏳ R1 |
-| ⏳ [NETWORKS-LANDSCAPE.md](20-affiliate-programs/NETWORKS-LANDSCAPE.md) | All other joinable networks (goods + services), with feed/API availability as the ranking key. | ⏳ R5 |
+| [ALIEXPRESS-AFFILIATE.md](20-affiliate-programs/ALIEXPRESS-AFFILIATE.md) | API is real but gated: Portals account + Open Platform app of type "Affiliate API" + business licence. **No sandbox.** 3-day cookie. ~5k req/day. 8 open gaps (G1–G8). | **7/10** |
+| ⏳ [NETWORKS-LANDSCAPE.md](20-affiliate-programs/NETWORKS-LANDSCAPE.md) | All other joinable networks (goods + services), with feed/API availability as the ranking key. | **2/10 — R5 produced nothing** |
 
 ## 30 · API reference
 
@@ -66,18 +66,20 @@ front-load a summary so they can be retrieved without full reads.
 
 | Page | Summary | Confidence |
 |---|---|---|
-| ⏳ [CHANNEL-REALITY.md](50-strategy-traffic/CHANNEL-REALITY.md) | Which channels work in 2026 for RU/CIS physical-goods affiliate; time-to-first-commission per channel. | ⏳ R6 |
-| ⏳ [UNIT-ECONOMICS.md](50-strategy-traffic/UNIT-ECONOMICS.md) | CPC/EPC reality with explicit arithmetic: clicks needed per revenue target. | ⏳ R6 |
-| ⏳ [TRAFFIC-IDEAS.md](50-strategy-traffic/TRAFFIC-IDEAS.md) | The 12–18 synthesised traffic ideas, ranked by value-to-effort. | ⏳ R6 |
-| ⏳ [ATTRIBUTION-AND-FRAUD.md](50-strategy-traffic/ATTRIBUTION-AND-FRAUD.md) | What destroys EPC in 2026, and the legitimate countermeasures. | ⏳ R6 |
+| [LLM-DISCOVERABILITY.md](50-strategy-traffic/LLM-DISCOVERABILITY.md) | **LLM crawlers must be assumed not to run JS.** HTML-first, `.md` twins, llms.txt v2, `Link:` headers, AI-bot robots policy. Basis for D-010. | **9/10** |
+| ⏳ [CHANNEL-REALITY.md](50-strategy-traffic/CHANNEL-REALITY.md) | Which channels work in 2026 for physical-goods affiliate; time-to-first-commission per channel. | **3/10 — R6 produced nothing** |
+| ⏳ [UNIT-ECONOMICS.md](50-strategy-traffic/UNIT-ECONOMICS.md) | CPC/EPC reality with explicit arithmetic: clicks needed per revenue target. | **3/10 — BLOCKING traffic spend (D-020)** |
+| ⏳ [TRAFFIC-IDEAS.md](50-strategy-traffic/TRAFFIC-IDEAS.md) | Synthesised traffic ideas, ranked by value-to-effort. | **3/10** |
+| ⏳ [ATTRIBUTION-AND-FRAUD.md](50-strategy-traffic/ATTRIBUTION-AND-FRAUD.md) | What destroys EPC in 2026, and the legitimate countermeasures. | **3/10** |
 
 ## 60 · Product synthesis
 
 | Page | Summary | Confidence |
 |---|---|---|
+| [COMPETITIVE-LANDSCAPE.md](60-product-synthesis/COMPETITIVE-LANDSCAPE.md) | B2B price tools are crowded but all serve retailers; consumer trackers are Amazon-only. **Empty quadrant: consumer-facing cross-border intelligence.** Five ranked gaps. | **8/10** |
 | ⏳ [CONCEPT-CATALOGUE.md](60-product-synthesis/CONCEPT-CATALOGUE.md) | All product concepts with problem, data need, incumbent wedge, effort. | ⏳ R7 |
-| ⏳ [LANDED-COST.md](60-product-synthesis/LANDED-COST.md) | True landed cost: item + shipping + customs/VAT + delivery time. The question cross-border buyers actually ask. | ⏳ R7 |
-| ⏳ [RISK-WARNING.md](60-product-synthesis/RISK-WARNING.md) | Fake-discount detection, counterfeit/gray-goods risk, safety-critical categories. | ⏳ R7 |
+| ⏳ [LANDED-COST.md](60-product-synthesis/LANDED-COST.md) | True landed cost: item + shipping + customs/VAT + delivery time. The highest-value gap (see COMPETITIVE-LANDSCAPE Space 1). | ⏳ R7 |
+| ⏳ [RISK-WARNING.md](60-product-synthesis/RISK-WARNING.md) | Fake-discount detection, counterfeit risk. **Note: safety-critical categories are now excluded outright (D-012).** | ⏳ R7 |
 | ⏳ [TRUST-MODEL.md](60-product-synthesis/TRUST-MODEL.md) | How to monetise without the user feeling betrayed; disclosure design. | ⏳ R7 |
 
 ## 70 · Architecture
@@ -93,7 +95,7 @@ front-load a summary so they can be retrieved without full reads.
 
 | Page | Summary | Confidence |
 |---|---|---|
-| ⏳ [TAX-RU.md](80-legal-compliance/TAX-RU.md) | НПД vs ИП, thresholds, reporting, foreign-currency payout mechanics. | ⏳ R8 |
+| ⏳ [TAX-RU.md](80-legal-compliance/TAX-RU.md) | **Operator is ИП, not НПД.** НПД vs ИП thresholds, reporting. ⚠️ **Payout mechanics from a foreign network to a Russian ИП is the critical unresolved question (R-002).** | **6/10** |
 | ⏳ [ADVERTISING-LAW-RU.md](80-legal-compliance/ADVERTISING-LAW-RU.md) | 54-ФЗ advertising marking, disclosure on sponsored content, penalties. | ⏳ R8 |
 | ⏳ [PERSONAL-DATA-RU.md](80-legal-compliance/PERSONAL-DATA-RU.md) | 152-ФЗ obligations and database localisation. | ⏳ R8 |
 | ⏳ [TRADEMARK-USE.md](80-legal-compliance/TRADEMARK-USE.md) | When logos/names of platforms may be used in an affiliate project. | ⏳ R8 |
