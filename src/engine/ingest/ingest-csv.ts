@@ -291,8 +291,14 @@ export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions):
             ? 'original_lt_sale'
             : null
 
-      const before = runner.query<{ fingerprint: string }>(
-        `SELECT title || '|' || detail_url || '|' || IFNULL(image_url,'') AS fingerprint
+      // Snapshot BEFORE the upsert: what was actually stored, if anything.
+      const before = runner.query<{
+        product_id: string
+        title: string
+        detail_url: string
+        image_url: string | null
+      }>(
+        `SELECT product_id, title, detail_url, image_url
          FROM product WHERE network_id = $1 AND external_product_id = $2`,
         [parsed.networkId, parsed.externalId],
       )
@@ -356,27 +362,43 @@ export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions):
       //
       // is_complete is false when ANY component is unknown (FR-9).
       const isComplete = parsed.shipping !== null
-      // Skip the write when an observation for this product + destination
-      // already exists at the same instant with the same price. Re-ingesting an
-      // identical feed must not append a duplicate point to the price series —
-      // that would inflate history and corrupt every average derived from it.
-      const existing = runner.query<{ sale_price_minor: number }>(
-        `SELECT sale_price_minor FROM price_observation
-         WHERE product_id = $1 AND destination_country = $2 AND observed_at = $3`,
-        [productId, parsed.destinationCountry, nowIso],
+
+      // ---- Idempotency measurement (NFR-1).
+      //
+      // Decided by comparing the INCOMING row against what was stored BEFORE
+      // this write. An earlier version re-read the product row after the upsert
+      // and compared it to a snapshot taken after as well, so the two always
+      // matched and every run reported "0 written" — including runs that
+      // genuinely changed a price. Never compare the stored value to itself.
+      const priorTitle = before[0]?.title ?? null
+      const priorUrl = before[0]?.detail_url ?? null
+      const priorImage = before[0]?.image_url ?? null
+
+      const productChanged =
+        priorTitle !== parsed.title ||
+        priorUrl !== parsed.detailUrl ||
+        priorImage !== parsed.imageUrl
+
+      // Only append a point when the price actually differs from the most
+      // recent observation for this product+destination. Re-ingesting the same
+      // feed on a later date must NOT stack identical points: that would
+      // inflate the series and distort every average derived from it.
+      const latest = runner.query<{ sale_price_minor: number; currency: string }>(
+        `SELECT sale_price_minor, currency FROM price_observation
+         WHERE product_id = $1 AND destination_country = $2
+         ORDER BY observed_at DESC LIMIT 1`,
+        [productId, parsed.destinationCountry],
       )[0]
 
-      if (existing && existing.sale_price_minor === parsed.salePrice.minor) {
-        // The product row was upserted above; only the price series is
-        // intentionally untouched. Count it as unchanged so the run's totals
-        // still add up (written + unchanged + excluded == rowsRead).
-        const afterFp = runner.query<{ fingerprint: string }>(
-          `SELECT title || '|' || detail_url || '|' || IFNULL(image_url,'') AS fingerprint
-           FROM product WHERE product_id = $1`,
-          [productId],
-        )[0]!.fingerprint
-        if (before[0]?.fingerprint === afterFp) unchanged++
-        else written++
+      const priceMoved =
+        !latest ||
+        latest.sale_price_minor !== parsed.salePrice.minor ||
+        latest.currency !== parsed.salePrice.currency
+
+      if (!priceMoved) {
+        // Price unchanged: no new history point. Still touch last_seen_at above.
+        if (productChanged) written++
+        else unchanged++
         continue
       }
 
@@ -411,18 +433,13 @@ export function ingestCsv(runner: Runner, csvText: string, opts: IngestOptions):
         ],
       )
 
-      // Idempotency measurement (NFR-1): did anything actually change?
-      const after = runner.query<{ fingerprint: string }>(
-        `SELECT title || '|' || detail_url || '|' || IFNULL(image_url,'') AS fingerprint
-         FROM product WHERE product_id = $1`,
-        [productId],
-      )[0]!.fingerprint
-      const priorFingerprint = before[0]?.fingerprint
-      if (priorFingerprint !== undefined && priorFingerprint === after) {
-        unchanged++
-      } else {
-        written++
-      }
+      // A new price point was appended. That alone is a change worth counting,
+      // even when title/url/image are untouched — which is the common case for
+      // a feed that only moved a price. An earlier version counted only
+      // `productChanged`, so a run that recorded a genuine price drop reported
+      // "0 rows written" and looked like a no-op.
+      if (productChanged || priceMoved) written++
+      else unchanged++
     }
 
     runner.commit()

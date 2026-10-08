@@ -54,18 +54,24 @@ export function seed(runner: ReturnType<typeof resolveRunner>): void {
 
     // Retention defaults. Conservative and NOT ToS-sourced (open gap M6) —
     // tighten when the actual clauses are known.
+    // [table, class, maxAgeDays, basis, rollupTo]
+    //
+    // rollup_to names the TABLE that receives the downsampled history before the
+    // raw rows are deleted (SPEC-003 FR-18). It is a bare table name, not a
+    // "key=value" string — an earlier version encoded it as
+    // "rollup_to=price_daily_rollup" and then split on '=', which stored the
+    // literal string "rollup_to" as the target. The verifier caught it.
     const retention: [string, string, number, string, string | null][] = [
       ['product', 'catalogue', 30, 'operator-review', null],
       ['category', 'catalogue', 30, 'operator-review', null],
-      ['price_observation', 'price-history', 365, 'operator-review', 'rollup_to=price_daily_rollup'],
+      ['price_observation', 'price-history', 365, 'operator-review', 'price_daily_rollup'],
       ['price_daily_rollup', 'derived-aggregate', 1095, 'derived-aggregate', null],
       ['safety_exclusion', 'catalogue', 365, 'operator-review', null],
       ['click_event', 'attribution', 90, 'operator-review', null],
       ['conversion_event', 'attribution', 730, 'operator-review', null],
       ['commission_record', 'attribution', 1825, 'operator-review', null],
     ]
-    for (const [table, cls, days, basis, extra] of retention) {
-      const [rollup] = (extra ?? '').split('=')
+    for (const [table, cls, days, basis, rollupTo] of retention) {
       runner.exec(
         `INSERT INTO retention_policy (table_name, retention_class, max_age_days, basis, rollup_to)
          VALUES ($1,$2,$3,$4,$5)
@@ -74,7 +80,7 @@ export function seed(runner: ReturnType<typeof resolveRunner>): void {
            max_age_days = excluded.max_age_days,
            basis = excluded.basis,
            rollup_to = excluded.rollup_to`,
-        [table, cls, days, basis, rollup || null],
+        [table, cls, days, basis, rollupTo],
       )
     }
 

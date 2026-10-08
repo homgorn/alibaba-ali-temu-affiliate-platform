@@ -181,7 +181,11 @@
       "Confirm the retention/downsampling rule from SPEC-003 is applied and documented in the output"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f013.ts",
+    "verified_at": "2026-10-08",
+    "evidence": "10/10 checks passed. Product 33006951783: 2026-10-01=18.50 -> 2026-10-05=14.99, two distinct historical points with source recorded. A price-only change reports rowsWritten 1; a no-op re-ingest reports 0. Re-ingesting an unchanged feed on 3 later dates adds 0 duplicate points. The daily rollup survives deletion of all raw observations (FR-18), and retention_policy has the correct rollup target. 113/113 tests, typecheck clean.",
+    "known_gaps": "The retention job itself (FR-16/FR-17) is not implemented - only the configuration and the rollup target are. Retention defaults are conservative and NOT ToS-sourced (gap M6)."
   },
   {
     "id": "F014",
