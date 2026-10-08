@@ -95,8 +95,10 @@ front-load a summary so they can be retrieved without full reads.
 | Spec | Scope |
 |---|---|
 | [SPEC-001](../specs/SPEC-001-ingestion-engine.md) | Module contract, idempotent upserts, rate budgeting, dead-letter, retention classes. **22 FR · 20 AC · 14 EC** |
+| [SPEC-002](../specs/SPEC-002-product-identity.md) | Cross-listing dedupe: PHash + title/category/price signals, scored candidates never merges. Capacity mismatch with 116M-vector systems handled explicitly. |
 | [SPEC-003](../specs/SPEC-003-schema.md) | Postgres-compatible schema, SQLite dev. **Destination-keyed pricing, money as integer minor units, retention as config.** Sizing arithmetic shown. |
 | [SPEC-004](../specs/SPEC-004-static-first-web.md) | Static HTML, `.md` twins, `llms.txt`, AI-bot robots policy, and **the compliance test that makes D-010 permanent.** |
+| [SPEC-005](../specs/SPEC-005-links-attribution.md) | Affiliate link construction, honest attribution (our clicks vs network report kept separate), clawback-aware commission recording. |
 
 ### ADRs
 

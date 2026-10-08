@@ -177,13 +177,18 @@ verification scripts assert **values**, not presence.
 
 ### Remaining in Phase 3
 
-- **F014** — lookup API with Postgres FTS (needs the Postgres runner for parity)
-- **F015** — the live AliExpress module (blocked on credentials)
+- **F014** — ✅ **complete.** Typed lookup API with free-text + category filter +
+  400 on malformed params; Postgres FTS full-parity recorded as an
+  INCONCLUSIVE gap because this machine has no Postgres server.
+- **Module plugin contract** — ✅ **complete.** `src/engine/module.ts` defines
+  `ModuleContract` and `assertValidContract`; `createCsvModule` proves a
+  no-API source satisfies it (the Temu-shaped case).
+- **F017** — ✅ **complete.** Safety-critical rows rejected at ingest, logged
+  with matched keyword/category, absent from lookup results, list env-configured.
+- **F015** — the live AliExpress module (blocked on credentials, issue #1).
 - **Retention job** — FR-16/FR-17 batched, resumable deletion. Configuration and
   schema exist; the job does not.
-- **Module plugin contract** — SPEC-001 FR-1..FR-5 is specified and the CSV
-  source implements it implicitly, but no explicit `ModuleContract` type or a
-  second module proving plug-in independence (F017) exists yet.
+
 
 ### Multi-level testing (operator asked)
 
