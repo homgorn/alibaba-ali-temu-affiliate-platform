@@ -1,0 +1,87 @@
+# ---- Secrets & credentials -------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*_rsa
+secrets/
+credentials/
+config/local/
+# Affiliate API keys MUST never enter git
+*aliexpress*key*
+*app_secret*
+apps_secret_*
+*_private_token*
+
+# ---- Node / pnpm -----------------------------------------------------------
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+dist/
+build/
+.next/
+.nuxt/
+.output/
+*.tsbuildinfo
+coverage/
+.nyc_output/
+
+# ---- Python / uv -----------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+
+# ---- Rust (if a fast scraper/parser is needed) -----------------------------
+target/
+Cargo.lock
+
+# ---- Go --------------------------------------------------------------------
+*.exe
+*.test
+
+# ---- Databases -------------------------------------------------------------
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+data/
+!data/.gitkeep
+*.sql.gz
+dump/
+
+# ---- Local env & runtime ---------------------------------------------------
+tmp/
+.cache/
+logs/local/
+*.log
+!docs/logs/**/*.md
+
+# ---- Research raw cache (keep reports, drop bulky raw fetches) ------------
+# Raw source captures are committed for auditability, but binary/PDF caches are not.
+research/raw/**/*.pdf
+research/raw/**/*.har
+research/raw/**/assets/
+
+# ---- OS / editor -----------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
+
+# ---- Build artefacts -------------------------------------------------------
+out/
+target/
+*.blend1
+*.blend2

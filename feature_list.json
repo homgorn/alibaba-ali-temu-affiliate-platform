@@ -1,0 +1,373 @@
+[
+  {
+    "id": "F001",
+    "category": "ops",
+    "description": "GitHub repository exists with a clean baseline commit containing the repo skeleton, AGENTS.md, logs, wiki index and research captures.",
+    "steps": [
+      "Run `gh auth status` — it reports being logged in to a GitHub host",
+      "Run `git -C '<repo>' log --oneline -1` and confirm a commit exists with message 'chore: project baseline'",
+      "Run `git -C '<repo>' status --porcelain` — it outputs nothing",
+      "Open the repository on github.com and confirm README.md is visible in the file listing"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F002",
+    "category": "ops",
+    "description": "Repository README exists in both English and Russian, describing the project, the north star, the stack and the current phase.",
+    "steps": [
+      "Open README.md — it is written in English and links to the Russian version",
+      "Open README.ru.md — it is written in Russian and links back to the English version",
+      "Both files state the north star ('first real commission received') and list the confirmed stack (TypeScript, Node 22, Next.js static-first, Cloudflare, SQLite dev / Postgres prod)",
+      "Both files link to docs/roadmap/ROADMAP.md and docs/wiki/INDEX.md"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F003",
+    "category": "quality",
+    "description": "LLM-wiki INDEX.md lists every wiki page in the docs/wiki tree, and every page listed actually exists.",
+    "steps": [
+      "Run: Get-ChildItem docs/wiki -Recurse -Filter *.md | ForEach-Object { $_.FullName } — collect the paths",
+      "Run a grep for every wiki link in docs/wiki/INDEX.md and confirm each resolves to a file on disk",
+      "Confirm there are zero wiki .md files on disk that are absent from INDEX.md",
+      "Confirm every page that is still pending research is marked with a confidence value or an explicit pending marker"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F004",
+    "category": "ops",
+    "description": "Subagent definitions exist under .opencode/agents/ for explorer, researcher, architect, implementer, verifier and analyst, and each inherits the no-deletion rule.",
+    "steps": [
+      "List .opencode/agents/ — six agent definition files are present",
+      "Open each file and confirm it contains the R1 no-deletion rule and the never-fabricate rule",
+      "Confirm verifier is defined and is explicitly forbidden from writing files",
+      "Confirm AGENTS.md section 3 names the same six agents with matching responsibilities"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F005",
+    "category": "ops",
+    "description": "Research round 2 completes and resolves the blocking gaps G1-G4 and the payout question, with every claim citing a raw source capture.",
+    "steps": [
+      "Open research/reports/ and confirm a report exists for each of the eight tracks R1-R8",
+      "Open docs/wiki/20-affiliate-programs/ALIEXPRESS-AFFILIATE.md and confirm gaps G1-G4 are marked resolved with the specific evidence that resolved them",
+      "Confirm the signing algorithm question (MD5/HMAC vs HMAC-SHA256) has one documented, cited answer",
+      "Confirm the payout question has a documented answer for a Russian ИП, and that the source is primary",
+      "Confirm every claim marked HARD FACT links to a file under research/raw/"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F006",
+    "category": "quality",
+    "description": "A Russian/CIS competitive analysis exists, closing gap G16 — the current competitive analysis is skewed toward Western tools.",
+    "steps": [
+      "Open docs/wiki/60-product-synthesis/COMPETITIVE-LANDSCAPE.md and confirm gap G16 is marked resolved",
+      "Confirm the page names at least three Russian-language price trackers or deal aggregators",
+      "For each named RU competitor, confirm a raw source capture exists under research/raw/r07-product-synthesis/",
+      "Confirm a positioning statement exists that distinguishes this project from the RU competitors specifically"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F007",
+    "category": "quality",
+    "description": "SPEC-001-ingestion-engine.md is approved: defines the module plugin contract, idempotent upserts, watermark-based incremental sync, exponential backoff with jitter, dead-letter handling, and a request budget that respects the API's daily quota.",
+    "steps": [
+      "Open docs/specs/SPEC-001-ingestion-engine.md and confirm all nine mandatory SDD sections are present",
+      "Confirm the Out of Scope section explicitly excludes anything not named in the spec",
+      "Confirm FR requirements are numbered and use RFC 2119 keywords",
+      "Confirm every AC references at least one FR or NFR",
+      "Confirm a data-retention policy is specified per field class, because affiliate API terms may forbid long retention",
+      "Confirm the spec's status field reads 'Approved'"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F008",
+    "category": "quality",
+    "description": "SPEC-003-schema.md is approved: a Postgres-compatible schema with SQLite working locally, including explicit retention policy columns and a price-history table sized against real request-volume assumptions.",
+    "steps": [
+      "Open docs/specs/SPEC-003-schema.md and confirm all nine SDD sections are present",
+      "Confirm the schema uses no Postgres-only feature that breaks under SQLite, or that the deviation is documented",
+      "Confirm the sizing section shows rows/day, GB/year and index cost arithmetic rather than asserting a conclusion",
+      "Confirm price-history retention and downsampling rules are specified",
+      "Confirm migration files exist under db/migrations/ and apply cleanly in both a fresh SQLite database and a fresh Postgres database"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F009",
+    "category": "quality",
+    "description": "SPEC-004-static-first-web.md is approved: every page ships as static server-rendered HTML, every page has an .md twin, llms.txt is generated at build time, and Link headers advertise the markdown versions.",
+    "steps": [
+      "Open docs/specs/SPEC-004-static-first-web.md and confirm all nine SDD sections are present",
+      "Confirm the spec states that no page content may depend on client-side JavaScript",
+      "Confirm the spec defines the .md URL convention (extension replaced or appended, consistently)",
+      "Confirm the spec defines the robots.txt policy for OAI-SearchBot, GPTBot, and at least two other named AI crawlers",
+      "Confirm a test strategy exists that fails the build if any page's content is absent from the server-rendered HTML"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F010",
+    "category": "quality",
+    "description": "ADR-001 through ADR-004 are written, covering static-first framework choice, hosting, ORM choice, and markdown-serving mechanism.",
+    "steps": [
+      "List docs/adr/ — at least four ADR files exist",
+      "Each ADR states Context, the decision, at least two alternatives considered with pros and cons, and consequences",
+      "ADR-001 compares Next.js and Astro explicitly, since the operator named both",
+      "ADR-002 states whether Cloudflare Pages accepts payment from a Russian ИП and whether Workers can reach the affiliate API, marking unverified items as UNVERIFIED"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F011",
+    "category": "functional",
+    "description": "A SQLite database can be created from migrations on a fresh checkout with a single documented command, containing the full product schema.",
+    "steps": [
+      "Clone or open the repo fresh and run the documented setup command",
+      "The command completes without error and prints the database path",
+      "Open the database and confirm the expected tables exist, including a product table and a price-history table",
+      "Run the migrations a second time and confirm they are idempotent — no error, no data loss"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F012",
+    "category": "functional",
+    "description": "A CSV feed of products can be ingested into the database end to end, with no affiliate API credentials required.",
+    "steps": [
+      "Place a small CSV fixture with at least 50 realistic product rows under the test fixtures directory",
+      "Run the documented ingest command against the fixture",
+      "The command exits zero and prints a count of rows ingested",
+      "Query the database and confirm the product count matches the fixture row count",
+      "Run the same ingest command a second time and confirm the product count is unchanged (idempotent upsert)",
+      "Modify one field in the fixture, re-run, and confirm only that row changed"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F013",
+    "category": "functional",
+    "description": "Price history is recorded over time, so that a product queried after multiple ingests returns more than one historical price point.",
+    "steps": [
+      "Ingest the fixture, then change the price in the fixture and ingest again",
+      "Query price history for one product_id and confirm two or more rows exist with distinct timestamps",
+      "Confirm each row records the source of the observation (csv, api, manual)",
+      "Confirm the retention/downsampling rule from SPEC-003 is applied and documented in the output"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F014",
+    "category": "functional",
+    "description": "A product can be looked up by free-text query and by category filter through a typed API, using Postgres full-text search.",
+    "steps": [
+      "Start the API using the documented command",
+      "Send a GET request for a search term that matches fixture data and confirm a JSON array of matching products",
+      "Send the same request with a category filter and confirm only that category's products are returned",
+      "Send a request for a term matching nothing and confirm an empty array with HTTP 200, not an error",
+      "Send a request with a malformed query parameter and confirm a clear 400 with a descriptive message"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F015",
+    "category": "integration",
+    "description": "The AliExpress module authenticates against the real affiliate API and makes one budgeted, successful product query.",
+    "steps": [
+      "Place the app key and app secret in a .env file that is gitignored",
+      "Confirm `git status --porcelain` does not list .env",
+      "Run the documented smoke-test command",
+      "The command authenticates successfully and returns at least one real product",
+      "Run the command twice and confirm the request counter increases by exactly the expected number of calls"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F016",
+    "category": "functional",
+    "description": "Affiliate deep links are generated correctly for an ingested product, and the link encodes the operator's tracking identifier.",
+    "steps": [
+      "Take a product_id present in the database and call the link-generation endpoint",
+      "Confirm the returned URL points to the expected AliExpress product page",
+      "Confirm the URL contains the operator's affiliate tracking identifier in the correct parameter",
+      "Confirm the generated link for a product with no commission yields a clearly-marked non-monetised result rather than a broken link",
+      "Confirm the endpoint enforces the per-programme geo policy and refuses to generate a link for a prohibited region"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F017",
+    "category": "functional",
+    "description": "Safety-critical product categories are excluded from the database and from all generated content.",
+    "steps": [
+      "Load a fixture containing products from batteries, chargers, PPE and baby-goods categories alongside normal products",
+      "Run ingestion and confirm the safety-critical rows are rejected with a logged reason",
+      "Confirm they are absent from the lookup API results",
+      "Confirm the rejection is logged to the audit log with the category that caused it",
+      "Confirm the exclusion list is configurable and documented, not hardcoded in the query"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F018",
+    "category": "functional",
+    "description": "A single product page renders as static HTML containing the product title, price, and an affiliate link, with no content dependent on JavaScript.",
+    "steps": [
+      "Build the site and serve it locally",
+      "Fetch the product page HTML with JavaScript disabled, or inspect the raw HTML response",
+      "Confirm the product title and price are present in the raw HTML source",
+      "Confirm the affiliate link is present in the raw HTML source",
+      "Confirm an .md twin of the same page is fetchable and contains the same factual content"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F019",
+    "category": "functional",
+    "description": "The site publishes a valid llms.txt, a sitemap.xml, and a robots.txt that explicitly permits AI search crawlers.",
+    "steps": [
+      "Fetch /llms.txt and confirm it parses as Markdown with an H1, a blockquote summary, and H2 sections of links",
+      "Confirm every link in llms.txt resolves to a page that actually exists",
+      "Fetch /robots.txt and confirm OAI-SearchBot is allowed",
+      "Confirm the site returns a Link header with rel=\"alternate\" type=\"text/markdown\" pointing at a .md twin",
+      "Confirm /sitemap.xml exists and lists the product pages"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F020",
+    "category": "quality",
+    "description": "An automated test fails the build if any page's primary content is absent from the server-rendered HTML, guarding the HTML-first requirement permanently.",
+    "steps": [
+      "Run the full test suite and confirm it passes",
+      "Temporarily replace a page's server-rendered content with client-only rendering",
+      "Re-run the suite and confirm the guard test FAILS with a message naming the offending page",
+      "Restore the page and confirm the suite passes again"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F021",
+    "category": "functional",
+    "description": "A landed-cost page shows item price, shipping and any known duty/VAT, and explicitly states what it does not include.",
+    "steps": [
+      "Open a product page for an item with known shipping cost",
+      "Confirm the page shows item price, shipping, and a computed total",
+      "Confirm the page states in visible text which cost components are not included",
+      "Open a product page for an item where shipping is unknown and confirm the page says so rather than showing zero",
+      "Confirm no page ever presents an incomplete total as if it were complete"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F022",
+    "category": "functional",
+    "description": "A Telegram bot delivers price-drop alerts for products a user has subscribed to.",
+    "steps": [
+      "Start the bot with a valid bot token supplied via environment variable",
+      "Send the bot a subscribe command for a product that exists in the database",
+      "Change that product's price in the database and run a price-change check",
+      "Confirm the bot sends a message within one minute containing the old price, the new price and a working affiliate link",
+      "Confirm the message includes a clear affiliate-disclosure line"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F023",
+    "category": "functional",
+    "description": "Traffic to the site is measured per channel, so that EPC and clicks-per-channel are known.",
+    "steps": [
+      "Visit the site from three distinguishable referrer channels",
+      "Confirm three distinct click events are recorded with their channel labels",
+      "Open the analytics view and confirm clicks per channel are correct",
+      "Confirm a conversion event can be recorded against a click",
+      "Confirm EPC per channel can be computed from clicks and commissions"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F024",
+    "category": "ops",
+    "description": "CI runs the full test ladder on every pull request and blocks merges on failure.",
+    "steps": [
+      "Open a pull request with a deliberately failing test",
+      "Confirm CI runs and reports the failure",
+      "Confirm the pull request cannot be merged while CI is red",
+      "Fix the test, push, and confirm CI goes green",
+      "Confirm CI runs lint, unit, contract, integration and golden-file tests"
+    ],
+    "priority": 2,
+    "passes": false
+  },
+  {
+    "id": "F025",
+    "category": "ops",
+    "description": "The site is deployed to Cloudflare and is publicly reachable, with a documented rollback procedure.",
+    "steps": [
+      "Follow the documented deploy command and confirm the deployment succeeds",
+      "Open the deployed URL and confirm the product page renders correctly",
+      "Fetch the .md twin on the deployed domain and confirm it exists",
+      "Deploy a known-bad build and confirm the documented rollback command restores the previous working version",
+      "Confirm the rollback procedure is written in docs/runbooks/"
+    ],
+    "priority": 3,
+    "passes": false
+  },
+  {
+    "id": "F026",
+    "category": "integration",
+    "description": "The site is live with at least one indexed, affiliate-linked page, and an affiliate click is recorded end to end.",
+    "steps": [
+      "Confirm the site is publicly reachable and a product page contains a working affiliate link",
+      "Click the affiliate link and confirm the destination is the correct product page on the marketplace",
+      "Confirm the click appears in the network's affiliate dashboard",
+      "Confirm the click is recorded by the site's own analytics",
+      "Confirm the recorded click count matches between the site and the network dashboard"
+    ],
+    "priority": 1,
+    "passes": false
+  },
+  {
+    "id": "F027",
+    "category": "functional",
+    "description": "A first real commission is received and reconciled against the platform's own records.",
+    "steps": [
+      "Confirm at least one qualifying order has reached Trade Completed or equivalent status in the affiliate dashboard",
+      "Confirm the commission amount appears in a payout statement",
+      "Confirm the payout was received by the ИП bank account",
+      "Compare the platform's expected commission against the actual payout and confirm the difference is explained",
+      "Append the reconciliation result to docs/logs/DECISION_LOG.md"
+    ],
+    "priority": 1,
+    "passes": false
+  }
+]
