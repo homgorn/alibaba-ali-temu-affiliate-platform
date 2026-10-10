@@ -87,3 +87,10 @@ out/
 target/
 *.blend1
 *.blend2
+
+# ---- Throwaway investigation scripts ---------------------------------------
+# Probes written while diagnosing a specific issue. One-off by nature, useless
+# a week later, and they get committed by accident because they sit next to the
+# real scripts. The files stay on disk (R1: never delete) and are simply not
+# tracked.
+scripts/_scratch/

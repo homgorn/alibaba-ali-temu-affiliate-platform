@@ -6,9 +6,10 @@
 A static-first, LLM-discoverable affiliate platform: product ingestion from
 affiliate APIs, honest price history, and true landed-cost computation.
 
-**Status:** Phase 0–2 complete. **Phase 3 (engine) complete: 24 tables, 113
-tests, 3 features independently verified.** Live API still needs credentials.
-**North star:** first real commission received.
+**Status:** Phase 0–2 complete. **Phase 3 (engine) complete: 24 tables, 127
+tests, 5 features independently verified** (F011 migrations, F012 ingestion,
+F013 price history, F014 lookup API, F017 safety exclusions). Live API still
+needs credentials. **North star:** first real commission received.
 
 ---
 
