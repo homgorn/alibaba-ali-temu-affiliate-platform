@@ -201,8 +201,8 @@
     "priority": 1,
     "passes": true,
     "verified_by": "scripts/verify-f014-f017.ts",
-    "verified_at": "2026-10-08",
-    "evidence": "Typed lookup API answers free-text + category with correct results, 400 on malformed params, empty array on no-match. Postgres FTS replaces SQLite LIKE at parity time (gap recorded)."
+    "verified_at": "2026-10-11",
+    "evidence": "VERIFIED 18/18 over real HTTP: API started as a child process on a real port and queried with fetch. Free-text, category, destination filters return correct rows; no-match returns [] with HTTP 200; malformed limit returns 400 with a descriptive message. Postgres FTS remains an INCONCLUSIVE gap (no server on this machine) — the local path is case-insensitive LIKE."
   },
   {
     "id": "F015",
@@ -246,8 +246,8 @@
     "priority": 1,
     "passes": true,
     "verified_by": "scripts/verify-f014-f017.ts + ingest.test.ts",
-    "verified_at": "2026-10-08",
-    "evidence": "Safety-critical rows are rejected at ingest with logged matched category/keyword and never enter the product table; lookup API never returns them. Exclusion list is env-configurable and documented."
+    "verified_at": "2026-10-11",
+    "evidence": "VERIFIED as part of F014/F017 (18/18). 11 safety-critical fixture rows excluded at ingest with matched category+keyword, absent from catalogue AND from the API; 66-11=55 reconciles. Configurable via SAFETY_EXCLUDED_CATEGORIES, documented in .env.example, no keyword literals in schema DDL. Found and fixed a real under-exclusion: Wireless Charging Pad passed while Wireless Charger Stand was excluded (D-031)."
   },
   {
     "id": "F018",

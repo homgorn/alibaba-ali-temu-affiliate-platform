@@ -245,6 +245,51 @@ describe('safety exclusion (SPEC-001 FR-20, EC-11)', () => {
     expect(matchesSafety('Fast charger with cable', [], cfg).excluded).toBe(true)
   })
 
+  // ---------------------------------------------------------------------------
+  // REGRESSION: found by scripts/verify-f014-f017.ts against the real fixture,
+  // not by a hypothetical. Both of these shipped in the same feed:
+  //
+  //   33006951840  Wireless Charger Stand Qi Fast 15W Foldable
+  //   33006951805  Wireless Charging Pad Qi Fast Charging
+  //
+  // With plural-only stemming the first stems to "charger" and matched the
+  // operator's keyword, while the second stemmed to "charging" and passed the
+  // gate. A charging pad is a charger; letting it through is the harm D-012
+  // exists to prevent. Same class of defect as the earlier Batteries/battery
+  // miss, so the fix is the symmetric derivational stemming in safety.ts.
+  // ---------------------------------------------------------------------------
+  it('excludes derivational forms of a keyword, not only its plural (regression)', () => {
+    for (const title of [
+      'Wireless Charging Pad Qi Fast Charging',
+      'Wireless Charger Stand Qi Fast 15W Foldable',
+      'Fast charger with cable',
+      'Tablet charging dock',
+      'Phone charger adapter',
+      'Battery Charger 18650',
+    ]) {
+      const v = matchesSafety(title, [], cfg)
+      expect(v.excluded, `"${title}" must be excluded`).toBe(true)
+    }
+  })
+
+  it('still does NOT over-exclude after derivational stemming', () => {
+    // The anti-over-exclusion guarantee must survive the wider stemming.
+    // "helmetless"/"batteryless" are ordinary products; "-less" is not in the
+    // rule set, so they cannot reduce to "helmet"/"battery".
+    expect(matchesSafety('Batteryless Flashlight', [], cfg).excluded).toBe(false)
+    expect(matchesSafety('Helmetless Hoodie', [], cfg).excluded).toBe(false)
+    expect(matchesSafety('Rechargeable Wireless Mouse', ['Computers', 'Accessories'], cfg).excluded).toBe(false)
+    expect(matchesSafety('Yoga Mat Anti Slip', ['Sports', 'Fitness'], cfg).excluded).toBe(false)
+  })
+
+  it('does not let short-word collapsing create false matches', () => {
+    // If stemming truncated below a real word root, "mate" would collapse to
+    // "mat" and a "mat" keyword would wrongly exclude a chess piece.
+    const shortCfg = parseSafetyConfig('mat, case, cookware')
+    expect(matchesSafety('Chess Mate Set', [], shortCfg).excluded).toBe(false)
+    expect(matchesSafety('Briefcase Leather Bag', [], shortCfg).excluded).toBe(false)
+  })
+
   it('does NOT over-exclude portmanteau words', () => {
     // A substring match would kill these ordinary products.
     expect(matchesSafety('Batteryless Flashlight', [], cfg).excluded).toBe(false)
