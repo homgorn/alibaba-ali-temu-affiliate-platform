@@ -1,0 +1,74 @@
+name: verify
+
+# Every gate that currently depends on me remembering to run it.
+#
+# The failure this exists to prevent: F014/F017 were marked `passes: true` on
+# the strength of a verifier that crashed before recording a verdict, and the
+# test suite stayed green the whole time because nothing in CI reads
+# feature_list.json. Same reasoning as D-029 — a guard that only fires when a
+# human remembers it is not a guard.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.5.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      # No build step exists: the engine runs on Node's native type stripping.
+      # tsc is used for checking only (see package.json typecheck).
+      - name: install
+        run: pnpm install --frozen-lockfile
+
+      - name: typecheck
+        run: pnpm typecheck
+
+      - name: test
+        run: pnpm test
+
+      # Fails when a feature is marked passing without recorded, re-runnable
+      # evidence in docs/logs/BUILD_LOG.md.
+      - name: ledger audit
+        run: pnpm audit:ledger
+
+      # Each feature verifier is run against its own scratch database, so they
+      # are independent of one another and safe to run in sequence.
+      - name: verify F011 migrations
+        run: pnpm verify:f011
+
+      - name: verify F012 ingestion
+        run: pnpm verify:f012
+
+      - name: verify F013 price history
+        run: pnpm verify:f013
+
+      - name: verify F014 lookup API + F017 safety exclusions
+        run: pnpm verify:f014f017
+
+      # Agent harness sanity. Cheap, and it is what caught a broken model
+      # ladder before dispatch rather than after.
+      - name: agent harness doctor
+        run: pnpm doctor
