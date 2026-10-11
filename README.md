@@ -121,6 +121,31 @@ Eight levels (L0–L7), detailed in [`ROADMAP.md`](docs/roadmap/ROADMAP.md#phase
 content is absent from the server-rendered HTML. The HTML-first requirement is
 easy to violate silently in a refactor and impossible to notice by eye.
 
+### Running the gates
+
+```bash
+pnpm install --frozen-lockfile
+sh scripts/hooks/install.sh     # one-time per clone — .git/hooks is not versioned
+pnpm verify                      # typecheck + tests + ledger audit
+```
+
+**Install the hook.** `pnpm verify` is the gate, and
+[`scripts/hooks/pre-push`](scripts/hooks/pre-push) runs it on every push.
+`.git/hooks` is not tracked by git, so a fresh clone has no gate until the
+installer runs. `SKIP_VERIFY=1 git push` bypasses it — record the reason in
+`docs/logs/DECISION_LOG.md`.
+
+`pnpm audit:ledger` fails when a feature is marked `passes: true` without a
+recorded verdict in [`docs/logs/BUILD_LOG.md`](docs/logs/BUILD_LOG.md) and a
+verifier that exists on disk. It exists because that exact failure happened once
+(F014/F017 were marked passing on a verifier that crashed before recording a
+verdict) and nothing caught it.
+
+Hosted CI is currently **unavailable**: GitHub Actions reports
+`your account is locked due to a billing issue` (issue #8), so the gates run on
+the pushing machine instead. [`.github/workflows/verify.yml`](.github/workflows/verify.yml)
+runs the same checks and will work unchanged once billing is restored.
+
 ---
 
 ## Agent harness
