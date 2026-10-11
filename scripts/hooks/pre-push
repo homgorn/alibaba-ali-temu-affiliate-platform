@@ -28,13 +28,24 @@ if [ "$SKIP_VERIFY" = "1" ]; then
   exit 0
 fi
 
+# A fresh clone has no node_modules, and `pnpm verify` then fails with
+# ERR_PNPM_IGNORED_BUILDS or a missing-binary error that reads like a broken
+# repository rather than an unprepared one. Say which it is.
+if [ ! -d node_modules ]; then
+  echo "pre-push: REFUSED. node_modules is missing."
+  echo "          Run:  pnpm install --frozen-lockfile"
+  echo "          (then push again). Nothing was pushed."
+  exit 1
+fi
+
 echo "pre-push: running pnpm verify (typecheck + tests + ledger audit)"
 
 if ! pnpm verify; then
   echo ""
   echo "pre-push: REFUSED. Gates failed; nothing was pushed."
-  echo "          Fix the failures above, or push with SKIP_VERIFY=1 if you"
-  echo "          have a reason and will record it."
+  echo "          Run 'pnpm verify' yourself to see the full output."
+  echo "          If the failure is understood and must be bypassed, push with"
+  echo "          SKIP_VERIFY=1 and record the reason in docs/logs/DECISION_LOG.md."
   exit 1
 fi
 
