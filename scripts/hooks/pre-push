@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# pre-push — run the project's gates before anything reaches main.
+#
+# WHY THIS EXISTS INSTEAD OF RELYING ON GITHUB ACTIONS:
+#   run 38171440299 failed before a single step started, with:
+#     "The job was not started because your account is locked due to a billing issue."
+#   Actions is unavailable on this account, so .github/workflows/verify.yml
+#   cannot run. A gate that cannot execute is not a gate.
+#
+#   This hook runs the same checks on the machine doing the pushing, so the
+#   guarantee survives the hosted runner being unavailable. The workflow file
+#   is kept for the day the account is restored — correct code costs nothing.
+#
+# INSTALL (once per clone; .git/hooks is NOT tracked by git):
+#   sh scripts/hooks/install.sh
+#   or on Windows:  git config core.hooksPath scripts/hooks
+#
+# Escape hatch:  SKIP_VERIFY=1 git push      (only when you know why)
+#
+# R1 note: this hook never deletes anything. It runs checks, and on failure
+# refuses the push.
+
+set -e
+
+if [ "$SKIP_VERIFY" = "1" ]; then
+  echo "pre-push: SKIP_VERIFY=1 — gates skipped by explicit operator request"
+  exit 0
+fi
+
+echo "pre-push: running pnpm verify (typecheck + tests + ledger audit)"
+
+if ! pnpm verify; then
+  echo ""
+  echo "pre-push: REFUSED. Gates failed; nothing was pushed."
+  echo "          Fix the failures above, or push with SKIP_VERIFY=1 if you"
+  echo "          have a reason and will record it."
+  exit 1
+fi
+
+echo "pre-push: gates passed"
+exit 0
