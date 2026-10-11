@@ -1,0 +1,30 @@
+# Line endings are a correctness issue here, not a style preference.
+#
+# A git hook written in sh dies on Windows the moment it is checked out with
+# CRLF: every line ends in a stray \r and sh fails with
+#   $'\r': command not found
+# A gate that fails to run is worse than no gate, because it reads as passing.
+#
+# core.autocrlf is true on the maintainer's machine, so shell hooks and CI
+# definitions must be pinned explicitly rather than left to that setting.
+
+* text=auto
+
+*.sh text eol=lf
+scripts/hooks/* text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sql text eol=lf
+
+# Generated, never hand-edited, always LF.
+package-lock.json -diff linguist-generated=true
+
+# Binary — must never be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.zip binary
