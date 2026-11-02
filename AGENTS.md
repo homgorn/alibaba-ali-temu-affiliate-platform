@@ -101,6 +101,7 @@ Spawn the narrowest agent that fits. Read-only agents must not write.
 | `implementer` | Build the current feature per spec | yes | `src/`, `tools/`, `db/` |
 | `verifier` | Prove a feature works end-to-end | no | — |
 | `analyst` | Metrics, funnels, EPC, P&L, analytics | yes | `docs/logs/`, `reports/` |
+| `lawyer` | Legal / tax / compliance constraints with citation discipline | no | `docs/adr/`, `docs/logs/` |
 
 **The `verifier` is not optional.** The most common failure in agent-driven
 work is declaring a feature complete after unit tests pass without ever

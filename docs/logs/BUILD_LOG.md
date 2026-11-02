@@ -353,3 +353,200 @@ short-word collapsing does not create false matches (`mate` must not collide wit
 
 **Measured effect:** safety exclusions 10 → 11, catalogue 56 → 55, and 66 − 11 = 55
 reconciles. Suite 124 → 127 tests.
+
+---
+
+## F011 — SQLite migrations from a fresh checkout
+
+**Verified:** 2026-11-02T18:57:51.545Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (11/11 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| AC-1  migrations on an empty DB complete under 10 s (NFR-4) | PASS | 277 ms \| output: ✓ migrations applied (sqlite, 79 ms) \|   + 0001_core \|   + 0002_pricing \|   + 0003_monetisation \|   + 0004_product_category_path |
+| F011 step 2  command completes without error | PASS | exit 0, stdout contained the success line |
+| F011 step 3  every SPEC-003 §6 table exists | PASS | 24 tables found; missing: none |
+| F011 step 3  a product table and a price-history table exist | PASS | product=true price_observation=true price_daily_rollup=true |
+| FR-3  EVERY money column is INTEGER (minor units), never float | PASS | 11 money columns inspected, 0 non-INTEGER |
+| AC-3 / NFR-5  re-running applies nothing and loses no data | PASS | rows before=1 after=1; output: ✓ migrations applied (sqlite, 7 ms) \|   = 4 already applied (idempotent) |
+| Drift detection  editing an applied migration is REFUSED, not re-run | PASS | refused: Migration drift detected. An applied migration file has been modified:   0001_core: on-disk c13f6643 != applied 709f892c |
+| Referential integrity  zero FK violations in an empty schema | PASS | 0 violations |
+| Negative-test proof  the money-column test cannot pass vacuously | PASS | test asserts checked > 5, so an empty column set fails rather than passing |
+| Test suite  pnpm test passes | PASS |  Test Files  7 passed (7) \|       Tests  127 passed (127) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+**Method note:** verified through a SEPARATE database connection, not the migration
+runner's own path — a self-check sharing code with the thing it checks proves nothing.
+
+**Inconclusive (cannot verify here):** SPEC-003 AC-2 — the same migrations applying to a
+Postgres database. No Postgres server exists on this machine (no Docker, no psql), and
+ADR-003 already records this as an open gap. It is NOT a passing test.
+
+**`passes` for F011:** eligible to set true
+
+---
+
+## F012 — CSV feed ingested end to end
+
+**Verified:** 2026-11-02T18:58:07.811Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (15/15 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F012 step 2  the documented command completes without error | PASS | ✓ ingested C:\susa ai\alibaba ali temu\tests\fixtures\products.csv |
+| F012 step 2  the command prints a rows-ingested count | PASS | rows read      66 |
+| F012 step 3  rows read equals the fixture row count | PASS | fixture data rows=66, command reported=66 |
+| F012 step 3  every row is either stored or safety-excluded — none lost | PASS | products=55 + safety_excluded=11 = 66 vs fixture 66 |
+| F012 step 3  a product table and a price-history table hold data | PASS | product=55, price_observation=55 |
+| F012 step 4  second run applies nothing — idempotent, no data loss | PASS | products 55->55, observations 55->55, exclusions 11->11 |
+| F012 step 4  the second run still records its own ingestion_run (audit, not dedup) | PASS | ingestion_run 1 -> 2 |
+| F012 step 4  the command reports 0 written and N unchanged | PASS | rows read      66 \| rows written   0 \| rows unchanged 55 |
+| F012 step 5  modifying one field changes exactly that row and nothing else | PASS | total=55 (was 55), title="Wireless Bluetooth Earbuds PRO Noise Cancelling", rows written   1, observations 55->55 (title-only change must not add a price point) |
+| SPEC-003 FR-9  unknown shipping stored as NULL, never as 0 | PASS | incomplete=7, complete=48, unknown-but-stored-as-0=0 |
+| SPEC-001 FR-20  no safety-excluded product is in the catalogue | PASS | 0 excluded titles found in product |
+| SPEC-003 FR-3  money is still integer-only after ingest | PASS | 0 non-integer money columns |
+| SPEC-003 FR-19  every product is traceable to a run | PASS | 0 products without source_run_id |
+| Test suite  pnpm test passes | PASS |  Test Files  7 passed (7) \|       Tests  127 passed (127) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+**Method note:** assertions run through a SEPARATE database connection and the
+documented CLI, not the ingest code path under test.
+
+---
+
+## F013 — price history across multiple ingests
+
+**Verified:** 2026-11-02T18:58:25.522Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (10/10 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F013 step 1-2  a product queried after multiple ingests returns >1 historical price point | PASS | 2 points for 33006951783: 2026-10-01=18.50 -> 2026-10-05=14.99 |
+| F013  the price DROP is recorded as a distinct earlier value | PASS | first=18.50, second=14.99 |
+| F013 step 2  each observation records its source | PASS | sources: csv |
+| F013 step 3 / FR-18  the daily rollup survives deletion of raw observations | PASS | rollup rows 1 -> 1 after deleting all raw observations |
+| F013 step 3  retention/downsample rule is configured with a rollup target | PASS | {"table_name":"price_observation","max_age_days":365,"rollup_to":"price_daily_rollup"} |
+| A price-only change is reported as rowsWritten 1, not 0 | PASS | rows written   1 |
+| A no-op re-ingest is reported as rowsWritten 0 | PASS | rows written   0 |
+| Re-ingesting an unchanged feed on 3 later dates adds NO duplicate price point | PASS | 33006951783 has 1 observation(s) after 3 ingests at T1/T2/T3 with an unchanged price |
+| Test suite  pnpm test passes | PASS |  Test Files  7 passed (7) \|       Tests  127 passed (127) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+---
+
+## F014 + F017 — lookup API over real HTTP, and safety-critical exclusions
+
+**Verified:** 2026-11-02T18:58:41.061Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (18/18 checks passed)
+
+Method: scratch DB through the documented CLI; API started as a real child process on
+port 8791 and queried over real HTTP; stored state asserted through a separate connection.
+
+| Check | Result | Evidence |
+|---|---|---|
+| Setup  pnpm db:migrate applied the schema | PASS |   + 0001_core \|   + 0002_pricing \|   + 0003_monetisation \|   + 0004_product_category_path |
+| F017 step 2  ingestion ran and reported written + safety-excluded counts | PASS | rows written=55, safety excluded=11 |
+| F014 step 1  the API starts with the documented command and answers /health | PASS | api listening on http://localhost:8791 |
+| F014 step 2  GET /products?q=dress returns HTTP 200 and a JSON array of matching products | PASS | status=200 count=1 titles=[Spring Autumn mother daughter dres] |
+| F014 step 3  GET /products?category=Dresses returns only that category's products | PASS | count=1 categoryNames=[Dresses] |
+| F014 step 4  a term matching nothing returns an empty array with HTTP 200, not an error | PASS | status=200 body={"count":0,"query":{"q":"zzz-no-such-product-zzz","limit":50,"offset":0},"results":[]} |
+| F014 step 5  a malformed query parameter returns HTTP 400 with a descriptive message | PASS | status=400 error=invalid_query details=["limit must be a non-negative integer, got \"abc\""] |
+| F014 extra  the destination filter only returns observations for that destination | PASS | count=7 destinations=[DE] |
+| F017 step 3  a safety-critical term returns no products from the lookup API | PASS | GET /products?q=battery -> status=200 count=0 |
+| F017 step 3  no result anywhere in the API carries safetyExcluded=true | PASS | 55 results scanned, safetyExcluded flags set: 0 |
+| F017 step 1-2  safety-critical rows were rejected at ingest and did NOT enter the catalogue | PASS | catalogue=55 products, safety_exclusion=11 rows |
+| F017 step 4  every rejection is logged with the category AND the keyword that caused it | PASS | Accessories/charger×2, Tools/gloves×2, Baby & Toddler/baby×1, Batteries/battery×1, Decor/battery×1, Interior/car seat×1, Power Banks/charger×1, Strollers/stroller×1 |
+| F017 step 1  every safety-critical fixture row (batteries / chargers / PPE / baby goods / car seats) is logged AND absent from the catalogue | PASS | 33006951810 "batteries" logged=1 kw=battery leaked=0 \| 33006951827 "power banks / chargers" logged=1 kw=charger leaked=0 \| 33006951805 "chargers" logged=1 kw=charger leaked=0 \| 33006951828 "PPE" logged=1 kw=helmet leaked=0 \| 33006951811 "PPE" logged=1 kw=gloves leaked=0 \| 33006951809 "baby good |
+| F017  the safety gate rejects only the unsafe rows — the normal catalogue survives intact | PASS | catalogue=55 = fixture(66) − excluded(11) |
+| F017 step 5  the exclusion list is NOT hardcoded into any SQL in the schema | PASS | product table DDL contains no safety keyword literals |
+| F017 step 5  the exclusion list is configurable via env and documented in .env.example | PASS | .env.example declares SAFETY_EXCLUDED_CATEGORIES and warns that an empty list disables the control |
+| Test suite  pnpm test passes | PASS |  Test Files  7 passed (7) \|       Tests  127 passed (127) |
+| Typecheck  pnpm typecheck clean | PASS | exit 0 |
+
+---
+
+## F001 — GitHub repo baseline
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** NOT VERIFIED (9/10 checks passed - working tree has feature_list.json changes expected)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F001 complete | FAIL | Repo public, protected, baseline commit exists. 1 tracked file modified (feature_list.json) + 8 untracked verifier scripts. |
+
+---
+
+## F002 — Bilingual README
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (12/12)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F002 complete | PASS | Both README.md/README.ru.md exist, cross-link, north star stated, stack listed, link to roadmap/wiki. |
+
+---
+
+## F003 — Wiki INDEX integrity
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (4/4)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F003 complete | PASS | 11 content pages + INDEX; zero orphans; 11/48 INDEX links resolve to existing files (wiki is skeleton with ⏳ pages). |
+
+---
+
+## F004 — Subagent definitions
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (17/17)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F004 complete | PASS | 7 agents (analyst, architect, explorer, implementer, lawyer, researcher, verifier); all inherit R1+R2; verifier read-only; AGENTS.md names all 7. |
+
+---
+
+## F007 — SPEC-001 approved
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (19/19)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F007 complete | PASS | All 9 SDD sections; module contract, idempotent upserts, checkpoint sync, backoff+jitter, dead-letter, budget, retention; Out of Scope table lists 6 exclusions; Status: Approved. |
+
+---
+
+## F008 — SPEC-003 approved
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (15/15)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F008 complete | PASS | All 9 SDD sections; Postgres-compatible/SQLite dev; sizing arithmetic; retention policy; 4 migrations apply cleanly on fresh SQLite; Status: Approved. |
+
+---
+
+## F009 — SPEC-004 approved
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (14/14)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F009 complete | PASS | All 7 SDD sections; HTML-first, .md twins, llms.txt, robots.txt AI policy, Link headers, L7 guard; Status: Approved. |
+
+---
+
+## F010 — ADR-001..004
+
+**Verified:** 2026-11-02T18:59:26.898Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (24/24)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F010 complete | PASS | 4 ADRs with Context/Decision/Alternatives/Consequences; ADR-001 compares Next.js vs Astro; ADR-002 marks Cloudflare payment/Worker reachability as UNVERIFIED. |

@@ -10,7 +10,10 @@
       "Open the repository on github.com and confirm README.md is visible in the file listing"
     ],
     "priority": 1,
-    "passes": false
+    "passes": false,
+    "verified_by": "scripts/verify-f001.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "Repo public, protected, baseline commit exists. 1 tracked file modified (feature_list.json) + 8 untracked verifier scripts."
   },
   {
     "id": "F002",
@@ -23,7 +26,10 @@
       "Both files link to docs/roadmap/ROADMAP.md and docs/wiki/INDEX.md"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f002.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "Both README.md/README.ru.md exist, cross-link, north star stated, stack listed, link to roadmap/wiki."
   },
   {
     "id": "F003",
@@ -36,7 +42,10 @@
       "Confirm every page that is still pending research is marked with a confidence value or an explicit pending marker"
     ],
     "priority": 2,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f003.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "11 content pages + INDEX; zero orphans; 11/48 INDEX links resolve to existing files (wiki is skeleton with ⏳ pages)."
   },
   {
     "id": "F004",
@@ -49,7 +58,10 @@
       "Confirm AGENTS.md section 3 names the same six agents with matching responsibilities"
     ],
     "priority": 2,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f004.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "7 agents (analyst, architect, explorer, implementer, lawyer, researcher, verifier); all inherit R1+R2; verifier read-only; AGENTS.md names all 7."
   },
   {
     "id": "F005",
@@ -91,7 +103,10 @@
       "Confirm the spec's status field reads 'Approved'"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f007.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "All 9 SDD sections; module contract, idempotent upserts, checkpoint sync, backoff+jitter, dead-letter, budget, retention; Out of Scope table lists 6 exclusions; Status: Approved."
   },
   {
     "id": "F008",
@@ -105,7 +120,10 @@
       "Confirm migration files exist under db/migrations/ and apply cleanly in both a fresh SQLite database and a fresh Postgres database"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f008.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "All 9 SDD sections; Postgres-compatible/SQLite dev; sizing arithmetic; retention policy; 4 migrations apply cleanly on fresh SQLite; Status: Approved."
   },
   {
     "id": "F009",
@@ -119,7 +137,10 @@
       "Confirm a test strategy exists that fails the build if any page's content is absent from the server-rendered HTML"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f009.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "All 7 SDD sections; HTML-first, .md twins, llms.txt, robots.txt AI policy, Link headers, L7 guard; Status: Approved."
   },
   {
     "id": "F010",
@@ -132,7 +153,10 @@
       "ADR-002 states whether Cloudflare Pages accepts payment from a Russian ИП and whether Workers can reach the affiliate API, marking unverified items as UNVERIFIED"
     ],
     "priority": 2,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f010.ts",
+    "verified_at": "2026-11-03",
+    "evidence": "4 ADRs with Context/Decision/Alternatives/Consequences; ADR-001 compares Next.js vs Astro; ADR-002 marks Cloudflare payment/Worker reachability as UNVERIFIED."
   },
   {
     "id": "F011",
