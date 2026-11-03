@@ -1,0 +1,36 @@
+---
+name: Bug report
+about: Report a reproducible bug
+title: "[BUG] "
+labels: ["bug"]
+assignees: ""
+---
+## Description
+A clear and concise description of what the bug is.
+
+## Steps to reproduce
+1. 
+2. 
+3. 
+
+## Expected behavior
+What you expected to happen.
+
+## Actual behavior
+What actually happened.
+
+## Evidence
+- **Command run:** 
+- **Output / error:** 
+- **Verifier script (if any):** `scripts/verify-fXXX.ts`
+
+## Environment
+- OS: 
+- Node: `node -v`
+- pnpm: `pnpm -v`
+- Commit: `git rev-parse HEAD`
+
+## Checklist
+- [ ] I ran `pnpm verify` and it fails on this issue
+- [ ] I checked existing issues for duplicates
+- [ ] This is not a missing credential issue (those are tracked separately)

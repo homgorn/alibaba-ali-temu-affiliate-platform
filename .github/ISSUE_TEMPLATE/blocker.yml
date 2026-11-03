@@ -1,0 +1,26 @@
+---
+name: Blocker / Owner decision needed
+about: A hard blocker requiring credentials, billing, or an operator decision
+title: "[BLOCKER] "
+labels: ["blocker"]
+assignees: ""
+---
+## What is blocked
+Which feature, spec, or milestone cannot proceed.
+
+## What is needed
+- [ ] Credentials (which: AliExpress / Amazon / Cloudflare / other)
+- [ ] Billing resolution (GitHub Actions / other service)
+- [ ] Operator decision (what question exactly)
+- [ ] External dependency (what service)
+
+## Impact if not resolved
+What stops, and what is the workaround.
+
+## Deadline / urgency
+When is this needed by?
+
+## Context / links
+- Spec section: 
+- Related issues: 
+- Research track:

@@ -1,0 +1,24 @@
+---
+name: Feature request
+about: Propose a new feature or enhancement
+title: "[FEATURE] "
+labels: ["enhancement"]
+assignees: ""
+---
+## Problem
+What problem does this solve? Reference a spec section or roadmap item if applicable.
+
+## Proposed solution
+Describe the solution you'd like.
+
+## Alternatives considered
+What other approaches did you consider?
+
+## Acceptance criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Related
+- Spec: SPEC-XXX
+- Issue: #XXX
+- Roadmap phase: X
