@@ -108,6 +108,7 @@ front-load a summary so they can be retrieved without full reads.
 | [ADR-002](../adr/ADR-002-hosting.md) | Cloudflare Pages + Workers. ⚠️ **3 unverified risks**, incl. payment from a Russian entity |
 | [ADR-003](../adr/ADR-003-database.md) | SQLite dev + Postgres prod. Sizing math **rules out SQLite-only** at 28 GB |
 | [ADR-004](../adr/ADR-004-markdown-serving.md) | Static `.md` artifacts, `page.html.md` convention, CDN header + template fallback |
+| [ADR-005](../adr/ADR-005-tracker-selection.md) | **Tracker: Keitaro 14-day trial → internal build** (hybrid). Open-source rejected (AGPL-3.0 viral + wrong category). Unblocks EPC/F023/F027. |
 
 ## 80 · Legal & compliance
 
