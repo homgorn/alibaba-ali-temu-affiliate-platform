@@ -27,6 +27,7 @@
     "verify:f012": "node --experimental-strip-types --no-warnings scripts/verify-f012.ts",
     "verify:f013": "node --experimental-strip-types --no-warnings scripts/verify-f013.ts",
     "verify:f014f017": "node --experimental-strip-types --no-warnings scripts/verify-f014-f017.ts",
+    "verify:tracker": "node --experimental-strip-types --no-warnings scripts/verify-tracker.ts",
     "verify": "pnpm typecheck && pnpm test && pnpm audit:ledger",
     "db:seed": "node --experimental-strip-types --no-warnings src/engine/cli/seed.ts",
     "api": "node --experimental-strip-types --no-warnings src/engine/api/server.ts"

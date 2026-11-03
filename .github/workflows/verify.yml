@@ -68,6 +68,9 @@ jobs:
       - name: verify F014 lookup API + F017 safety exclusions
         run: pnpm verify:f014f017
 
+      - name: verify attribution tracker kernel
+        run: pnpm verify:tracker
+
       # Agent harness sanity. Cheap, and it is what caught a broken model
       # ladder before dispatch rather than after.
       - name: agent harness doctor

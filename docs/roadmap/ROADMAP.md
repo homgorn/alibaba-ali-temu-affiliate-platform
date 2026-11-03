@@ -275,7 +275,7 @@ Recorded so they are visible, not forgotten:
 
 | # | Gap | Handling |
 |---|---|---|
-| M1 | **Analytics instrumentation was not specified.** Without EPC/clicks-by-channel data, phases 4d gates cannot be evaluated and we cannot prove the north star. **Needs a tracking decision** — operator suggested finding and adapting an open-source tracker like Keitaro. | Phase 2 spec |
+| M1 | ~~**Analytics instrumentation was not specified.**~~ **RESOLVED 2026-11-03.** Decision recorded in ADR-005: hybrid (Keitaro 14-day trial → internal tracker). Internal implementation exists: `/click` records SPEC-005 clicks (channel required, salted visitor hash), `/postback/:network` is idempotent (SPEC-005 EC-12), `/api/epc` reports earnings per click per channel. 6/6 verifier checks pass via `pnpm verify:tracker`. Keitaro is for validation only; internal tracker is the long-term path. | RESOLVED — ADR-005, `scripts/verify-tracker.ts` |
 | M2 | **Monitoring/alerting** — API failure, feed staleness, site-down detection. | Phase 2 spec |
 | M3 | **Backup/restore** for the Postgres prod DB. | Phase 2 |
 | M4 | **CI/CD** — not yet defined; needs deploy + rollback. | Phase 2 |

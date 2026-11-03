@@ -550,3 +550,19 @@ port 8791 and queried over real HTTP; stored state asserted through a separate c
 | Check | Result | Evidence |
 |---|---|---|
 | F010 complete | PASS | 4 ADRs with Context/Decision/Alternatives/Consequences; ADR-001 compares Next.js vs Astro; ADR-002 marks Cloudflare payment/Worker reachability as UNVERIFIED. |
+
+---
+
+## Attribution tracker kernel (ADR-005) — click → postback → EPC
+
+**Verified:** 2026-11-03T14:41:14.081Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (6/6 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| Setup  seed product via CLI | PASS | product=0838bfbe-7b0d-4ee6-84d8-5ec02e50be75 |
+| Tracker  three channels produce three stored clicks | PASS | channels=[organic,paid_google,telegram] total=3 |
+| Tracker  no raw IP appears in stored visitor hashes | PASS | oERlT0ls…, DoQHBfwf…, ZAYNUqmz… |
+| Postback  duplicate report for the same order is idempotent | PASS | created(true) → same conversionId=true |
+| EPC  organic earns commission on one converted click | PASS | clicks=1 conversions=1 commission=1500 epc=1500 |
+| EPC  unattributed network reports are surfaced separately, never merged | PASS | unattributed=0 rows=[organic,paid_google,telegram] |
