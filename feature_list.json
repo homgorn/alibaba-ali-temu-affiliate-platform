@@ -254,7 +254,11 @@
       "Confirm the endpoint enforces the per-programme geo policy and refuses to generate a link for a prohibited region"
     ],
     "priority": 1,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f016.ts",
+    "verified_at": "2026-11-04",
+    "evidence": "VERIFIED 8/8. Feed promotion_link served only when it contains the operator trackingId (FR-3); monetisable=0 yields non-monetised, never a monetised link (FR-4); Alibaba B2B × RU refused (FR-5); invalid stored link suppressed (FR-8); each link carries observed_at + status=unknown (FR-6). Feed links without our trackingId are refused.",
+    "known_gaps": "Live AliExpress promotion_link pipeline is UNVERIFIED — needs Portals credentials (issue #1). B2B deferred per D-009; geo-gate written and tested but unused on real B2B traffic."
   },
   {
     "id": "F017",

@@ -566,3 +566,21 @@ port 8791 and queried over real HTTP; stored state asserted through a separate c
 | Postback  duplicate report for the same order is idempotent | PASS | created(true) → same conversionId=true |
 | EPC  organic earns commission on one converted click | PASS | clicks=1 conversions=1 commission=1500 epc=1500 |
 | EPC  unattributed network reports are surfaced separately, never merged | PASS | unattributed=0 rows=[organic,paid_google,telegram] |
+
+---
+
+## F016 — affiliate deep-link resolution from the feed
+
+**Verified:** 2026-11-04T16:18:54.752Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (8/8 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F016  fixture ingested via documented CLI | PASS | ✓ ingested C:\susa ai\alibaba ali temu\tests\fixtures\products.csv |
+| F016  promotion_link stored with status=unknown and observed_at set (FR-6) | PASS | status=unknown observed_at=2026-11-04T00:00:00.000Z |
+| F016  link carries the operator trackingId (FR-3) | PASS | trx-verify-16 |
+| F016  monetised product + feed link with trackingId → served | PASS | {"kind":"link","url":"https://s.click.aliexpress.com/e/_verify123?tpid=321121&s=trx-verify-16","trackingId":"trx-verify-16","monetised":true,"source":"feed"} |
+| F016  wrong trackingId → refused (FR-3) | PASS | {"kind":"refused","reason":"feed promotion_link does not contain the operator trackingId — refusing to serve unverified link"} |
+| F016  monetisable=0 → non-monetised result, never a monetised link (FR-4) | PASS | {"kind":"non-monetised","reason":"product has no commission rate — no monetised link (SPEC-005 FR-4)"} |
+| F016  B2B × RU destination → refused (FR-5) | PASS | {"kind":"refused","reason":"network alibaba does not allow destination RU"} |
+| F016  invalid stored link is suppressed, never served (FR-8) | PASS | {"kind":"unavailable","reason":"feed provided no promotion_link; no local template has been verified for this network, so none is issued"} |
