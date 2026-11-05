@@ -209,6 +209,18 @@ verification scripts assert **values**, not presence.
 
 L0–L4 and L7 green. A verifier has confirmed the real path, not just tests.
 
+**Actual state 2026-11-04:** L0, L1, L3, L7 green. L2 (module contract) exists
+and passes; L5 (live API) blocked on credentials (#1); L4 (golden files) not
+yet wired; L6 (full fixture → API → rendered page) is now achievable and the
+site layer exists, but end-to-end from fixture to rendered page has not been
+run as one pipeline.
+
+**Site built 2026-11-04:** `apps/web` — static-export Next.js, fed from the
+engine’s ingestion pipeline, 55 prerendered product pages with `.md` twins,
+`llms.txt`, `robots.txt`, `sitemap.xml`; L7 test runs as the site’s
+`postbuild` and fails the build on regression. F018/F019/F020 VERIFIED
+(12/12). Deployment (F025) and live traffic (F026/F027) are open.
+
 ---
 
 ## Phase 4 — DISTRIBUTION (the actual business)
