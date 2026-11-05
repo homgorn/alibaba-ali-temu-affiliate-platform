@@ -1,3 +1,8 @@
+# pnpm workspace — the site (apps/web) is a separate package from the engine.
+# The root package.json remains the engine's manifest; the site has its own
+# dependencies (React/Next.js) and its own build pipeline.
+packages:
+  - apps/*
 allowBuilds:
-  better-sqlite3: set this to true or false
   esbuild: set this to true or false
+  sharp: set this to true or false
