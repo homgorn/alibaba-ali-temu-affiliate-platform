@@ -6,10 +6,8 @@
 A static-first, LLM-discoverable affiliate platform: product ingestion from
 affiliate APIs, honest price history, and true landed-cost computation.
 
-**Status:** Phase 0–2 complete. **Phase 3 (engine) complete: 24 tables, 127
-tests, 5 features independently verified** (F011 migrations, F012 ingestion,
-F013 price history, F014 lookup API, F017 safety exclusions). Live API still
-needs credentials. **North star:** first real commission received.
+**Status:** Phase 0–2 complete. **Phase 3 (engine) complete + site prototype: 24 tables, 152
+tests, 16 features independently verified** (F002-F004, F007-F014, F016-F020 — incl. F018 static pages, F019 llms.txt/robots.txt/sitemap, F020 L7 guard). Live API still needs credentials. **North star:** first real commission received.
 
 ---
 
@@ -74,9 +72,11 @@ research/
   raw/        Verbatim source captures — provenance for every claim.
   reports/    Per-track research reports, each ending in a GAPS section.
 src/          engine/ (ingestion) · modules/ (per-network) · shared/
+apps/web/     Static-export Next.js site — every page includes .md twin,
+              llms.txt, robots.txt, sitemap.xml and L7 guard (apps/web/scripts/verify-site.mjs)
 db/           schema, migrations, seeds
 .opencode/    Agent definitions with model-ladder failover
-scripts/      agents-doctor.mjs · dispatch.mjs
+scripts/      agents-doctor.mjs · dispatch.mjs · verify-*.ts (per-feature verifiers)
 ```
 
 ---
@@ -126,14 +126,16 @@ easy to violate silently in a refactor and impossible to notice by eye.
 ```bash
 pnpm install --frozen-lockfile
 sh scripts/hooks/install.sh     # one-time per clone — .git/hooks is not versioned
-pnpm verify                      # typecheck + tests + ledger audit
+pnpm --filter @affiliate/web build # rebuilds static export + verifier, or:
+pnpm verify                      # typecheck + 127+ tests + ledger audit + SITE BUILD
 ```
 
 **Install the hook.** `pnpm verify` is the gate, and
 [`scripts/hooks/pre-push`](scripts/hooks/pre-push) runs it on every push.
 `.git/hooks` is not tracked by git, so a fresh clone has no gate until the
 installer runs. `SKIP_VERIFY=1 git push` bypasses it — record the reason in
-`docs/logs/DECISION_LOG.md`.
+`docs/logs/DECISION_LOG.md`. `pnpm verify` now also rebuilds and verifies the
+site, so every push proves the static export still satisfies the L7 guard.
 
 `pnpm audit:ledger` fails when a feature is marked `passes: true` without a
 recorded verdict in [`docs/logs/BUILD_LOG.md`](docs/logs/BUILD_LOG.md) and a
