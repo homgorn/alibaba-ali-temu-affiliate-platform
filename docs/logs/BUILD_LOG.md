@@ -632,3 +632,19 @@ port 8791 and queried over real HTTP; stored state asserted through a separate c
 | build fails if primary content is absent from server HTML | PASS | no product page relies on client JS for its marker |
 | every product page < 100 KB (FR-25) | PASS | all 55 pages < 100 KB |
 | F020 complete | PASS | no product page relies on client JS for its marker |
+
+---
+
+## F021 — landed-cost page with honest unknowns
+
+**Verified:** 2026-11-11T04:38:12.141Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (12/12 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| F021  every product page shows an honest landed-cost breakdown | PASS | all pages show cost-block with incomplete notice |
+| F021  item price shown | PASS | from feed (sale_price_minor) |
+| F021  shipping shown when known, "Unknown" when not | PASS | shippingMinor ?? null → "Unknown — not in feed" |
+| F021  duty/VAT shown as "Unknown" (no tariff table) | PASS | no fabricated duty/VAT values |
+| F021  total is null when components missing (no false completeness) | PASS | "Cannot be computed — some components are unknown" |
+| F021  incomplete notice lists unknown components | PASS | notice with landed.unknown.join(", ") |

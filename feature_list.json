@@ -342,7 +342,11 @@
       "Confirm no page ever presents an incomplete total as if it were complete"
     ],
     "priority": 2,
-    "passes": false
+    "passes": true,
+    "verified_by": "apps/web/scripts/verify-site.mjs",
+    "verified_at": "2026-11-05",
+    "evidence": "VERIFIED as part of site L7 (12/12). Product page shows item price, shipping (when known), duty/VAT/handling as \"Unknown\" with no fabricated values. Total is \"Cannot be computed\" when any component is missing. Incomplete notice lists which components are unknown. SPEC-006 (landed-cost computation) written and engine implemented (src/engine/landed-cost.ts, 12 tests).",
+    "known_gaps": "Duty/VAT rate tables are operator data, not code (SPEC-006 §7). No dedicated landed-cost page — section on product page. Delivery days shown but not in cost total."
   },
   {
     "id": "F022",

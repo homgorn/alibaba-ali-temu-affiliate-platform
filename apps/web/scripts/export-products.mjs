@@ -54,7 +54,7 @@ const db = new DatabaseSync(dbPath)
 const rows = db.prepare(`
   SELECT p.external_product_id, p.title, p.detail_url, p.category_path,
          p.monetisable, p.safety_excluded, p.image_url,
-         o.sale_price_minor, o.currency
+         o.sale_price_minor, o.currency, o.shipping_minor, o.delivery_bucket_days
   FROM product p
   LEFT JOIN (
     SELECT product_id, destination_country, MAX(observed_at) AS max_at
@@ -81,6 +81,9 @@ const products = rows.map((row) => ({
     currency: row.currency ?? 'USD',
     amountMinor: row.sale_price_minor ?? null,
   },
+  shippingMinor: row.shipping_minor ?? null,
+  shippingCurrency: row.currency ?? 'USD',
+  deliveryBucketDays: row.delivery_bucket_days ?? null,
 }))
 
 mkdirSync(OUT_DIR, { recursive: true })

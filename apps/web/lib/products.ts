@@ -20,6 +20,9 @@ export interface ProductCard {
   readonly networkId: string
   readonly categoryPath: string | null
   readonly price: { currency: string; amountMinor: number | null }
+  readonly shippingMinor: number | null
+  readonly shippingCurrency: string
+  readonly deliveryBucketDays: number | null
   readonly monetisable: boolean
   readonly detailUrl: string
 }

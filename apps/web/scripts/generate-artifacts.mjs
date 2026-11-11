@@ -44,12 +44,17 @@ writeFileSync(join(WEB, 'public', 'llms.txt'), lines.join('\n'), 'utf8')
 // never authored separately.
 const md = (p) => {
   const price = p.price.amountMinor !== null ? `${(p.price.amountMinor / 100).toFixed(2)} ${p.price.currency}` : 'Unknown — not in feed'
+  const shipping = p.shippingMinor !== null ? `${(p.shippingMinor / 100).toFixed(2)} ${p.shippingCurrency}` : 'Unknown — not in feed'
   return [
     `# ${p.title}`,
     '',
     `> ${p.categoryPath ?? 'Uncategorised'}`,
     '',
     `- Price: ${price}`,
+    `- Shipping: ${shipping}`,
+    `- Duty / customs: Unknown — no tariff data for this country + category`,
+    `- VAT / sales tax: Unknown — no rate table for this destination`,
+    `- Estimated total: Cannot be computed — some components are unknown`,
     `- Network: ${p.networkId}`,
     '',
     p.monetisable

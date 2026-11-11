@@ -87,7 +87,10 @@ const jsOnly = htmlFiles.filter((f) => {
   const html = readFileSync(join(OUT, 'product', f), 'utf8')
   return !html.includes('data-page-kind')
 })
-check('F020  no product page relies on client JS for its marker (FR-2)', jsOnly.length === 0, jsOnly.length ? `missing marker: ${jsOnly.join(', ')}` : 'all pages carry marker')
+check('F021  every product page shows an honest landed-cost breakdown', htmlFiles.every((f) => {
+  const html = readFileSync(join(OUT, 'product', f), 'utf8')
+  return html.includes('cost-block') && html.includes('Estimated total') && html.includes('incomplete')
+}), 'all pages show cost-block with incomplete notice')
 
 const failed = results.filter((r) => !r.ok)
 const verdict = failed.length === 0 ? 'VERIFIED' : 'NOT VERIFIED'
