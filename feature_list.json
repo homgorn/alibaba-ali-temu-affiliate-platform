@@ -388,7 +388,10 @@
       "Confirm CI runs lint, unit, contract, integration and golden-file tests"
     ],
     "priority": 2,
-    "passes": false
+    "passes": false,
+    "notes": "F024 plan complete (D-033): pre-push hook IS the CI gate until GitHub billing restores hosted Actions. Workflow file kept, DORMANT. Issue #8 closed as not planned 2026-11-12 with reopening criteria. Literal requirement — hosted CI on every PR blocking merge — is NOT met; this feature stays passes:false until either billing is restored or another CI provider is provisioned.",
+    "verified_by": "docs/logs/DECISION_LOG.md (D-033) + docs/logs/RISK_LOG.md (R-018/R-022) + README \"Running the gates\"",
+    "verified_at": "2026-11-12"
   },
   {
     "id": "F025",

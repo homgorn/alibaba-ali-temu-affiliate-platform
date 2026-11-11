@@ -144,9 +144,10 @@ verifier that exists on disk. It exists because that exact failure happened once
 verdict) and nothing caught it.
 
 Hosted CI is currently **unavailable**: GitHub Actions reports
-`your account is locked due to a billing issue` (issue #8), so the gates run on
-the pushing machine instead. [`.github/workflows/verify.yml`](.github/workflows/verify.yml)
-runs the same checks and will work unchanged once billing is restored.
+`your account is locked due to a billing issue`. The gates run instead on the
+pushing machine via `scripts/hooks/pre-push`. The dormant
+[`.github/workflows/verify.yml`](.github/workflows/verify.yml) runs the same
+checks and works unchanged the day billing is restored. See D-033.
 
 ---
 

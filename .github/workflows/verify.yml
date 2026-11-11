@@ -1,5 +1,15 @@
 name: verify
 
+# DORMANT — NOT RUNNING.
+# GitHub Actions on this account failed since 2026-10-11 with:
+#   "The job was not started because your account is locked due to a billing issue."
+# It remains in the repo so that the day billing is restored it runs the same
+# `pnpm verify` the pre-push hook runs, with zero rework. Until then, the gate
+# is the LOCAL pre-push hook (`sh scripts/hooks/install.sh`, then `git push`).
+# See DECISION_LOG D-033, RISK_LOG R-018/R-022, issue #8.
+#
+# Do not delete this file (R1); do not rely on it as a PR gate (D-033).
+
 # Every gate that currently depends on me remembering to run it.
 #
 # The failure this exists to prevent: F014/F017 were marked `passes: true` on
