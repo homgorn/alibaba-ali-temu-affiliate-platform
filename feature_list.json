@@ -10,10 +10,10 @@
       "Open the repository on github.com and confirm README.md is visible in the file listing"
     ],
     "priority": 1,
-    "passes": false,
+    "passes": true,
     "verified_by": "scripts/verify-f001.ts",
-    "verified_at": "2026-11-03",
-    "evidence": "Repo public, protected, baseline commit exists. 1 tracked file modified (feature_list.json) + 8 untracked verifier scripts."
+    "verified_at": "2026-11-11",
+    "evidence": "VERIFIED 10/10. Repo public, not archived, not disabled. Branch protection: force push disabled, deletions disabled, review policy documented (D-032: 0 required reviews — solo dev, no force-push/delete guards remain). Baseline commit exists in history. README.md visible. Working tree clean (except expected ledger + verifier modifications)."
   },
   {
     "id": "F002",

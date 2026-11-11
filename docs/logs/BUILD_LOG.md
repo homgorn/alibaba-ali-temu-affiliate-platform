@@ -648,3 +648,23 @@ port 8791 and queried over real HTTP; stored state asserted through a separate c
 | F021  duty/VAT shown as "Unknown" (no tariff table) | PASS | no fabricated duty/VAT values |
 | F021  total is null when components missing (no false completeness) | PASS | "Cannot be computed — some components are unknown" |
 | F021  incomplete notice lists unknown components | PASS | notice with landed.unknown.join(", ") |
+
+---
+
+## F001 — GitHub repository baseline
+
+**Verified:** 2026-11-11T04:52:51.644Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (10/10 checks passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| gh auth reports logged in | PASS | github.com |
+| repo is public (not private) | PASS | private=false |
+| repo not archived | PASS | archived=false |
+| repo not disabled | PASS | disabled=false |
+| branch protection: force push disabled | PASS | force_push=false |
+| branch protection: deletions disabled | PASS | deletions=false |
+| branch protection: review policy is documented (D-032) | PASS | reviews=none (solo dev, pre-push gate) |
+| baseline commit exists in history | PASS | found in history |
+| no unexpected working tree changes | PASS | clean (except ledger + verifiers) |
+| README.md visible in repo | PASS | README.md |
