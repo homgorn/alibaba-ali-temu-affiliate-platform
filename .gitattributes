@@ -11,6 +11,7 @@
 * text=auto
 
 *.sh text eol=lf
+*.mjs text eol=lf
 scripts/hooks/* text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
