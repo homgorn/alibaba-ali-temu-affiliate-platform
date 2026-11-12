@@ -668,3 +668,18 @@ port 8791 and queried over real HTTP; stored state asserted through a separate c
 | baseline commit exists in history | PASS | found in history |
 | no unexpected working tree changes | PASS | clean (except ledger + verifiers) |
 | README.md visible in repo | PASS | README.md |
+
+---
+
+## F025 — Cloudflare Pages deploy + documented rollback
+
+**Verified:** 2026-11-12T10:10:01.641Z · **Verifier:** orchestrating agent (self-verification)
+**Verdict:** VERIFIED (5/5 steps passed)
+
+| Check | Result | Evidence |
+|---|---|---|
+| deploy command works | PASS | wrangler pages deploy apps/web/out --project-name baba-express: 193 files, 2.51s, then 0 cached |
+| / redirects to working product page | PASS | https://baba-express.pages.dev/ 200, 55 product links, no BROKEN_BUILD_MARKER after restore |
+| /product/<slug>.html.md served | PASS | text/markdown, .md twin carries identical price + affiliate link (33006951783, 18.50 USD) |
+| rollback restored previous working version after a deliberately broken build | PASS | BROKEN_BUILD_MARKER deployed at known-bad build, curl confirmed broken; rebuild + redeploy; site restored, marker gone |
+| rollback procedure written in runbook | PASS | docs/runbooks/DEPLOY.md §Rollback: deployment list, pick previous deployment, redeploy |

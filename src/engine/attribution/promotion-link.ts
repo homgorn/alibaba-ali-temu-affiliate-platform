@@ -35,9 +35,9 @@ export interface StoredPromotionLink {
 }
 
 /** Persist the feed's link. Returns the row (or the existing one on re-ingest). */
-export function storePromotionLink(r: Runner, input: StorePromotionLinkInput): StoredPromotionLink {
+export function storePromotionLink(runner: Runner, input: StorePromotionLinkInput): StoredPromotionLink {
   const now = input.now ?? new Date()
-  const existing = r.query<{
+  const existing = runner.query<{
     link_id: string
     product_id: string
     destination_country: string | null
@@ -64,7 +64,7 @@ export function storePromotionLink(r: Runner, input: StorePromotionLinkInput): S
 
   const linkId = newId()
   const observedAt = now.toISOString()
-  r.exec(
+  runner.exec(
     `INSERT INTO promotion_link
        (link_id, product_id, destination_country, url, source, monetised, status, observed_at)
      VALUES ($1, $2, $3, $4, $5, 1, 'unknown', $6)`,
@@ -96,14 +96,14 @@ interface PromotionLinkRow {
  * dropped. The tracking identifier is required (FR-3) — no tracking id, no link.
  */
 export function resolvePromotionLinkFor(
-  r: Runner,
+  runner: Runner,
   productId: string,
   destinationCountry: string | null,
   trackingId: string,
 ): DeepLinkState {
   // The network and monetisable flag come from the DB, never from the caller,
   // so a caller can't grant itself a link for a product that has no commission.
-  const productRows = r.query<{
+  const productRows = runner.query<{
     monetisable: number | boolean
     network_id: string
   }>(
@@ -119,7 +119,7 @@ export function resolvePromotionLinkFor(
   // previously-valid link is served with its observed_at intact so the caller
   // can show staleness — revalidation is the caller's job for now.
   const dest = destinationCountry?.trim().toUpperCase() ?? null
-  const links = r.query<PromotionLinkRow>(
+  const links = runner.query<PromotionLinkRow>(
     `SELECT url, source, status, observed_at, destination_country
      FROM promotion_link
      WHERE product_id = $1

@@ -3,9 +3,15 @@
 **Scope:** the static site in `apps/web` (ADR-001/ADR-002) and, later, the
 tracking Workers for the internal attribution tracker (ADR-005).
 
-**State:** the Pages project does not exist yet. Everything required to stand
-it up is in this repo. F025 remains open until a real deployment is verified
-with smoke tests on the live URL (and recorded in BUILD_LOG.md).
+**State (as of 2026-11-12):** DEPLOYED to https://baba-express.pages.dev
+(direct-upload, no Git integration). Project `baba-express`, branch `main`,
+created via wrangler with `--force` (delegation to Workers failed; the command
+is one-time per project creation). Smoke tests PASS. Rollback drilled on the
+live site (known-bad build deployed → confirmed → rebuilt → redeployed →
+verified). Custom domain `baba-express.r00m.ru` attached, status: pending
+DNS — the operator must add `CNAME baba-express → baba-express.pages.dev`
+at the DNS panel for r00m.ru, or grant `Zone:DNS:Edit` to the Pages token.
+The Pages token is intentionally scoped to Pages only and cannot see zones.
 
 ---
 
@@ -58,11 +64,16 @@ curl -sI "https://<subdomain>.pages.dev/product/<slug>" | grep -i '^Link:'
 **CLI alternative:**
 
 ```bash
-# from the repository root
-npx wrangler@latest pages project create affiliate-platform --production-branch main
-pnpm --filter @affiliate/web build
-npx wrangler@latest pages deploy apps/web/out --project-name affiliate-platform
+# from the repository root — cwd matters: wrangler looks for functions/ next to cwd
+node scripts/_scratch/cf-wrangler-cwd.ts apps/web pages deploy out/ \
+     --project-name baba-express --branch main
 ```
+
+**IMPORTANT:** deploy from `apps/web` cwd (or use the wrapper above). With cwd at
+the repo root, Pages upload finds no `functions/` directory and the middleware
+silently disappears — the site renders but the per-page `Link:` header from the
+Pages Function is missing (SPEC-004 FR-10 fail). Symptom: smoke test
+`Link header` shows `(missing)` while everything else passes.
 
 ---
 

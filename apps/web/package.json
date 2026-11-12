@@ -6,7 +6,7 @@
     "dev": "next dev",
     "prebuild": "node scripts/generate-artifacts.mjs",
     "build": "next build",
-    "postbuild": "node scripts/verify-site.mjs",
+    "postbuild": "node scripts/cp-functions.mjs && node scripts/verify-site.mjs",
     "verify": "node scripts/verify-site.mjs",
     "start": "next start"
   },

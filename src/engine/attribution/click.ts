@@ -55,21 +55,21 @@ interface NetworkRow {
   cookie_window_days: number | null
 }
 
-export function recordClick(r: Runner, input: RecordClickInput): RecordedClick {
+export function recordClick(runner: Runner, input: RecordClickInput): RecordedClick {
   const now = input.now ?? new Date()
   const channel = input.channel?.trim()
   if (!channel) {
     throw new ClickError('channel is required — without it EPC per channel is uncomputable (SPEC-005 FR-9)')
   }
 
-  const productRows = r.query<ProductRow>(
+  const productRows = runner.query<ProductRow>(
     'SELECT product_id, network_id FROM product WHERE product_id = $1',
     [input.productId],
   )
   const product = productRows[0]
   if (!product) throw new ClickError(`product not found: ${input.productId}`)
 
-  const netRows = r.query<NetworkRow>(
+  const netRows = runner.query<NetworkRow>(
     'SELECT cookie_window_days FROM network WHERE network_id = $1',
     [product.network_id],
   )
@@ -86,7 +86,7 @@ export function recordClick(r: Runner, input: RecordClickInput): RecordedClick {
   // FR-10: hash here so the raw IP never reaches the SQL layer or any log.
   const visitorHash = hashVisitor(input.ip, input.userAgent, input.salt)
 
-  r.exec(
+  runner.exec(
     `INSERT INTO click_event
        (click_id, product_id, network_id, destination_country, channel, clicked_at,
         visitor_hash, self_referred, attribution_expires_at)

@@ -405,7 +405,11 @@
       "Confirm the rollback procedure is written in docs/runbooks/"
     ],
     "priority": 3,
-    "passes": false
+    "passes": true,
+    "verified_by": "scripts/verify-f025.ts",
+    "verified_at": "2026-11-12",
+    "evidence": "DEPLOYED to https://baba-express.pages.dev (wrangler direct upload). Product page renders; .md twin served with text/markdown and identical facts; all 13 L7 checks PASS on every build. Rollback DRILLED on the live site: bad build deployed -> broken state confirmed via curl -> full rebuild -> redeploy -> site restored (10,631 bytes, 55 product URLs, marker present). Rollback documented in docs/runbooks/DEPLOY.md.",
+    "known_gaps": "Custom domain baba-express.r00m.ru attached but PENDING DNS — operator adds CNAME at the zone (Pages token lacks Zone:DNS:Edit by design). NEXT_PUBLIC_SITE_URL set to the custom domain in the built artifacts."
   },
   {
     "id": "F026",

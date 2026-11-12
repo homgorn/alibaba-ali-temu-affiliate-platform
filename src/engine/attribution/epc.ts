@@ -31,8 +31,8 @@ export interface EpcReport {
   readonly unattributed: number
 }
 
-export function epcByChannel(r: Runner, currency = 'USD'): EpcReport {
-  const rows = r.query<{
+export function epcByChannel(runner: Runner, currency = 'USD'): EpcReport {
+  const rows = runner.query<{
     channel: string
     clicks: number
     conversions: number | null
@@ -53,7 +53,7 @@ export function epcByChannel(r: Runner, currency = 'USD'): EpcReport {
     [currency.toUpperCase()],
   )
 
-  const unattributed = r.query<{ c: number }>(
+  const unattributed = runner.query<{ c: number }>(
     `SELECT COUNT(*) AS c FROM conversion_event WHERE click_id IS NULL`,
   )[0]?.c ?? 0
 

@@ -57,7 +57,7 @@ export class PostbackError extends Error {
   }
 }
 
-export function recordConversion(r: Runner, input: RecordConversionInput): RecordedConversion {
+export function recordConversion(runner: Runner, input: RecordConversionInput): RecordedConversion {
   const now = input.now ?? new Date()
 
   if (!input.externalOrderId?.trim()) {
@@ -74,14 +74,14 @@ export function recordConversion(r: Runner, input: RecordConversionInput): Recor
     throw new PostbackError(`status must be one of ${VALID_STATUSES.join(', ')}`)
   }
 
-  const net = r.query<{ network_id: string }>('SELECT network_id FROM network WHERE network_id = $1', [input.networkId])
+  const net = runner.query<{ network_id: string }>('SELECT network_id FROM network WHERE network_id = $1', [input.networkId])
   if (net.length === 0) throw new PostbackError(`unknown network: ${input.networkId}`)
 
   // Link to our click only when it exists AND belongs to the same network —
   // otherwise we would attribute a network's report to a click it did not send.
   let clickId: string | null = null
   if (input.clickId) {
-    const click = r.query<{ click_id: string; network_id: string }>(
+    const click = runner.query<{ click_id: string; network_id: string }>(
       'SELECT click_id, network_id FROM click_event WHERE click_id = $1',
       [input.clickId],
     )
@@ -97,7 +97,7 @@ export function recordConversion(r: Runner, input: RecordConversionInput): Recor
   // known we get zero rows back and treat the postback as an idempotent
   // no-op (200). RETURNING keeps the check atomic with the insert — no
   // SELECT-then-INSERT race.
-  const inserted = r.query<{ conversion_id: string }>(
+  const inserted = runner.query<{ conversion_id: string }>(
     `INSERT INTO conversion_event
        (conversion_id, network_id, external_order_id, click_id, status, amount_minor, currency, reported_at)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -107,7 +107,7 @@ export function recordConversion(r: Runner, input: RecordConversionInput): Recor
   )
 
   if (inserted.length === 0) {
-    const existing = r.query<{ conversion_id: string; status: string; click_id: string | null }>(
+    const existing = runner.query<{ conversion_id: string; status: string; click_id: string | null }>(
       'SELECT conversion_id, status, click_id FROM conversion_event WHERE network_id = $1 AND external_order_id = $2',
       [input.networkId, input.externalOrderId],
     )[0]!

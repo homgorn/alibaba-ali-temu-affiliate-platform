@@ -46,7 +46,7 @@ check('F018  product page HTML contains title, marker and link', missing.length 
 // which is NOT the affiliate link. Pick the first EXTERNAL href — the only
 // external link on the page is the merchant one.
 const md = readFileSync(join(OUT, 'product', '33006951783.html.md'), 'utf8')
-const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://example.pages.dev'
+const siteOrigin = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://example.pages.dev').replace(/\/+$/, '')
 const externalHref = [...sample.matchAll(/href="(https?:\/\/[^"]+)"/g)].map((m) => m[1]).find((h) => !h.startsWith(siteOrigin))
 const mdHasSameLink = externalHref ? md.includes(externalHref) : false
 check('F018  .md twin carries the same affiliate link as the HTML', mdHasSameLink, externalHref ?? 'no external link found in HTML')
@@ -64,13 +64,17 @@ const lines = llms.split('\n')
 check('F019  /llms.txt conforms to v2 shape (H1 + blockquote)', /^# /.test(lines[0]) && /^> /.test(lines[1]), `${lines[0]} | ${lines[1]}`)
 const llmsLinks = [...llms.matchAll(/\]\(([^)]+)\)/g)].map((m) => m[1])
 const badLinks = llmsLinks.filter((l) => {
-  const rel = l.startsWith('http') ? null : l.startsWith('/') ? l : `/${l}`
-  if (rel === null) {
-    const https = l.replace(/^https:\/\/example\.pages\.dev\//, '/')
-    return !existsSync(join(OUT, https.replace(/\/$/, '.html'))) && !existsSync(join(OUT, https.replace(/\/$/, '') + '.html')) && !existsSync(join(OUT, https))
-  }
+  let rel
+  if (l.startsWith(siteOrigin)) rel = l.slice(siteOrigin.length)
+  else if (l.startsWith('http')) rel = null // external link — llms.txt should only link our own pages
+  else if (l.startsWith('/')) rel = l
+  else rel = `/${l}`
+  if (rel === null) return true
+  rel = rel.replace(/\/+$/, '') || '/'
   if (rel === '/llms.txt' || rel === '/robots.txt' || rel === '/sitemap.xml') return !existsSync(join(OUT, rel.slice(1)))
-  return !existsSync(join(OUT, rel.slice(1))) && !existsSync(join(OUT, rel.slice(1) + '.html'))
+  if (rel === '/') return !existsSync(join(OUT, 'index.html'))
+  const page = rel.slice(1) + '.html'
+  return !existsSync(join(OUT, page)) && !existsSync(join(OUT, rel.slice(1), 'index.html'))
 })
 check('F019  every llms.txt link resolves on disk', badLinks.length === 0, badLinks.length ? `bad: ${badLinks.join(', ')}` : `${llmsLinks.length} links OK`)
 

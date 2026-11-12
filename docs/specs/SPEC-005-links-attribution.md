@@ -331,7 +331,7 @@ export interface DisclosureText {
 | `clicked_at` | timestamptz | NOT NULL |
 | `visitor_hash` | text | NOT NULL — **salted**, never raw IP |
 | `self_referred` | bool | NOT NULL default false |
-| `expires_at` | timestamptz | NOT NULL — cookie window end (NFR-3) |
+| `attribution_expires_at` | timestamptz | NOT NULL — cookie window end (NFR-3). Renamed from the spec’s original `expires_at` to match `db/migrations/0003_monetisation.sql`. |
 
 > Index on `(product_id, clicked_at DESC)` and `(channel, clicked_at)`.
 
