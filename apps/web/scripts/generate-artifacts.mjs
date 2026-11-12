@@ -88,6 +88,25 @@ writeFileSync(
   'utf8',
 )
 
+// Catalog twin — linked from the page's Link alternate.
+writeFileSync(
+  join(WEB, 'public', 'catalog.html.md'),
+  [
+    '# Catalog',
+    '',
+    `> ${products.length} products. Safety-critical categories are excluded entirely — not warned about.`,
+    '',
+    '## Products',
+    '',
+    ...products.map((p) => {
+      const price = p.price.amountMinor !== null ? `${(p.price.amountMinor / 100).toFixed(2)} ${p.price.currency}` : 'Unknown'
+      return `- [${p.title}](${SITE}/product/${p.slug}) — ${p.categoryPath ?? 'Uncategorised'} · ${price}`
+    }),
+    '',
+  ].join('\n'),
+  'utf8',
+)
+
 // ------------------------------------------------------------- robots.txt (FR-15..18)
 const robots = [
   'User-agent: *',

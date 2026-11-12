@@ -14,6 +14,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: p.title,
     description: `${p.title} — honest price and availability from the affiliate feed.`,
+    alternates: {
+      types: {
+        'text/markdown': `/product/${p.slug}.html.md`,
+      },
+    },
   }
 }
 

@@ -41,11 +41,15 @@ const mustContain = [
 const missing = mustContain.filter((s) => !sample.includes(s))
 check('F018  product page HTML contains title, marker and link', missing.length === 0, missing.length ? `missing: ${missing.join(', ')}` : 'all present')
 
-// --- F018: .md twin exists and contains the SAME link href as HTML
+// --- F018: .md twin exists and contains the SAME merchant link href as HTML
+// The page also carries a site-origin alternate link (e.g. /product/slug.html.md),
+// which is NOT the affiliate link. Pick the first EXTERNAL href — the only
+// external link on the page is the merchant one.
 const md = readFileSync(join(OUT, 'product', '33006951783.html.md'), 'utf8')
-const hrefMatch = sample.match(/href="(https:\/\/[^"]+)"/)
-const mdHasSameLink = hrefMatch ? md.includes(hrefMatch[1]) : false
-check('F018  .md twin carries the same affiliate link as the HTML', mdHasSameLink, hrefMatch ? hrefMatch[1] : 'no link found in HTML')
+const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://example.pages.dev'
+const externalHref = [...sample.matchAll(/href="(https?:\/\/[^"]+)"/g)].map((m) => m[1]).find((h) => !h.startsWith(siteOrigin))
+const mdHasSameLink = externalHref ? md.includes(externalHref) : false
+check('F018  .md twin carries the same affiliate link as the HTML', mdHasSameLink, externalHref ?? 'no external link found in HTML')
 
 // --- F018: .md twin carries the same price as the HTML
 const priceMatch = sample.match(/(\d+\.\d{2})\s*(USD|EUR|GBP|JPY)/)

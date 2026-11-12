@@ -5,6 +5,11 @@ import { allProducts } from '../../lib/products'
 export const metadata: Metadata = {
   title: 'Catalog',
   description: 'Products ingested from affiliate feeds, safety-excluded items removed.',
+  alternates: {
+    types: {
+      'text/markdown': '/catalog.html.md',
+    },
+  },
 }
 
 export default function CatalogPage() {

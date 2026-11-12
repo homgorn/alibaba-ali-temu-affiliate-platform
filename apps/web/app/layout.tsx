@@ -9,14 +9,16 @@ export const metadata: Metadata = {
     default: 'Affiliate Price Intelligence',
     template: '%s · Affiliate Price Intelligence',
   },
+  alternates: {
+    types: {
+      'text/markdown': '/index.html.md',
+    },
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="alternate" type="text/markdown" href="/index.html.md" />
-      </head>
       <body>
         <header className="site-header">
           <nav aria-label="Top navigation">

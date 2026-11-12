@@ -107,3 +107,9 @@ apps/web/public/robots.txt
 apps/web/public/sitemap.xml
 apps/web/public/index.html.md
 apps/web/public/product/
+
+# ---- Cloudflare -------------------------------------------------------
+# Local wrangler state and secrets. Never commit the token.
+.wrangler/
+.dev.vars
+.dev.vars.*
