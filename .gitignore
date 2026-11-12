@@ -106,6 +106,7 @@ apps/web/public/llms.txt
 apps/web/public/robots.txt
 apps/web/public/sitemap.xml
 apps/web/public/index.html.md
+apps/web/public/catalog.html.md
 apps/web/public/product/
 
 # ---- Cloudflare -------------------------------------------------------
